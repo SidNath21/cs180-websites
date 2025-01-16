@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title> Project 1 - CS180 </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+    <div class="main-description mt-3">
+
+        <h1 class="display-3 text-center"> CS 180 - Project 1 </h1>
+        <p class="lead text-center fs-3"> Images of the Russian Empire: Colorizing the Prokudin-Gorskii photo collection
+        </p>
+        <p class="text-center fs-4"> Siddharth Nath - <span>sidnath@berkeley.edu</span> </p>
+        <div style="width: 80%;" class="mx-auto">
+            <hr />
+        </div>
+    </div>
+
+    <div class="project-body mx-auto" style="width: 80%;">
+
+
+        <div class="project-overview">
+
+            <h1 class="display-6"> Project Overview </h1>
+
+            <p class="lead">
+                This project invovled taking the RGB digitized glass-plate negatives captured by Sergei Mikhailovich
+                Prokudin-Gorskii (1863-1944) and using image processing algorithms to produce a colored image.
+                Sergei Prokudin-Gorskii won the Tzar's special permission to travel across the vast Russian
+                Empire and take photographs of everything he saw.
+                He recorded three exposures of every scene onto a glass plate using a red, a green, and a blue filter --
+                however, at the time, there was no known technology to print color photography.
+                Luckily, his RGB glass negatives were purchased in 1948 by the Library of Congress which are now
+                publically available for us to use and work with.
+                To view these images with color, we need a way to accurately overlay and align the Red, Green, and Blue
+                Channels which required the use of image alignment algorithms for this project.
+            </p>
+
+        </div>
+
+
+        <div class="approach">
+
+            <h1 class="display-6"> My Approach </h1>
+            
+            <p class="lead">
+                Since simply stacking the RGB color channels on top of each other fails to produce a clear and sharp image, I first tried aligning the RGB channels by exhaustively searching over a [-15 to 15] window and using
+                the L2 norm -- known as the Sum of Squared Differences (SSD) -- to score how well the image channels align with each other. 
+                To get accurate results, I made sure to crop the images when calculating the SSD to avoid fitting to the noise within the borders and to focus on the main central content of the images.
+                By naively searching over this window and finding the (x, y) displacement vector that produced the
+                lowest L2 Norm, I was able to align the color channels for the smaller images without any problems.
+                <br> <br>
+                This initial exhausive search method did not work well on the larger .tif images since finding the best
+                displacement vector is computationally expensive and slow if searching over a larger window. To overcome
+                this issue, I implemented an Image Pyramid technique for Image Alignment that leverages the fact that
+                searching for displacements on smaller images is much faster and less expensive.
+                To construct an image pyramid, I repetitively downscaled the original image by a factor of 2 until
+                either of the image's dimensions (width or height) was less than 200px.
+                Starting at the coarsest (most downscaled image), I used the single-scale image alignment algorithm (this time using a [-7, +7] window) to find the
+                best displacement vector. Then I would move back down the image pyramid and apply the scaled displacement vector calculated from the previous image onto this image. After this, I would repreat the alignment process and continute to move down the image pyramid while scaling the
+                alignment by 2 until reaching the original highest-resolution image.
+            </p>
+            
+        </div>
+        
+            <h1 class="display-6"> Problems </h1>
+            <p class="lead"> 
+                The Image Pyramid alignment algorithm was able to align all the provided images except for emir.tif. This image, depicting the Emir of Bukhara, does not actually have the same brightness values across the different color channels. Therefore, using the raw pixels when calculating the L2 norm or the normalized cross-correlation score will lead to innacurate results as shown below. 
+            </p>
+            
+        <div class="problems">
+            
+        </div>
+
+
+
+        <div class="example-images">
+
+            <h1 class="display-6"> Example Images </h1>
+
+            <p> For the following .jpg images, the exhaustive single-scale alignment search algorithm across the [-15, +15] window worked fine and produced the following output. Additionally, each displacement vector shown below is in the format of (vertical (y) displacement, horizontal (x) displacement) </p>
+            <h5> Small Images </h5>
+            <hr>
+
+            <div class="container grid-container">
+
+                <div class="row">
+                    <p class="col-6 fw-medium text-center"> Unaligned Images </p>
+                    <p class="col-6 fw-medium text-center"> Aligned Images</p>
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_cathedral.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> cathedral.jpg </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/cathedral.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (12, 3), G: (5, 2) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_monastery.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> monastery.jpg </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/monastery.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (3, 2), G: (-3, 2) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_tobolsk.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> tobolsk.jpg </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/tobolsk.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (6, 3), G: (3, 3) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <hr>
+                <p> For the following .tif images, the naive alignment algorithm failed to accurately align the RGB channels and was unable to produce a visually pleasing colored output image. 
+                    However, using the Image Pyramid technique provided significanly better results as it it able to identify the displacement vectors for images where the best alignment lies outside the [-15, 15] search window.
+                    The algorithm's output is seen below:
+                </p>
+                <h5> Large Images </h5>
+                <hr>
+
+                <div class="row">
+                    <p class="col-6 fw-medium text-center"> Unaligned Images </p>
+                    <p class="col-6 fw-medium text-center"> Aligned Images</p>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_church.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> church.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/church.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (58, -4), G: (25, 4) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_emir.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> emir.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/emir.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (0, -196), G: (49, 24) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_harvesters.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> harvesters.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/harvesters.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (124, 14), G: (60, 17) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_icon.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> icon.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/icon.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (89, 23), G: (41, 17) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_lady.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> lady.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/lady.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (113, 12), G: (53, 8) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_melons.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> melons.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/melons.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (178, 14), G: (81, 10) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_onion_church.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> onion_church.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/onion_church.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (108, 36), G: (51, 27) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_sculpture.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> sculpture.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/sculpture.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (140, -27), G: (33, -11) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_self_portrait.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> self_portrait.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/self_portrait.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (176, 37), G: (78, 29) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_three_generations.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> three_generations.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/three_generations.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (112, 12), G: (52, 14) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_train.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> train.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/train.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (87, 32), G: (43, 6) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="sample-images">
+
+            <hr>
+
+            <h1 class="display-6"> Sample Images </h1>
+
+            <p> The following images show the result of my Image Pyramid Alignment Algorithm on images I downloaded from the Prokudin-Gorskii collection: </p>
+
+            <div class="container grid-container">
+
+                <div class="row">
+                    <p class="col-6 fw-medium text-center"> Unaligned Images </p>
+                    <p class="col-6 fw-medium text-center"> Aligned Images</p>
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_ex_flowers.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> flowers.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/ex_flowers.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (55, 46), G: (31, 30) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_ex_dog.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> dog.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/ex_dog.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (82, -2), G: (14, -1) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_ex_prisoners.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> prisoners.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/ex_prisoners.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (71, -21), G: (24, -13) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/stacked_ex_railroad.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> railroad.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/ex_railroad.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> R: (108, -19), G: (28, -8) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="extra-credit">
+
+            <hr>
+
+            <h1 class="display-6"> Extra Credit - Automatic Cropping </h1>
+
+            <p> Although the image pyramid algorithm works well to align the image channels, the resulting images have distracting colorful borders that make it harder to appreciate and visualize the moments captured by Sergei Prokudin-Gorskii.
+                Therefore, in addition to implementing the Image Pyramid Algorithm to automatically align the RGB channels, I also developed an auto-cropping feature that is able to identify and remove the colored borders. 
+                To successfully implement this feature, I did the following:
+            </p>
+
+            <ol>
+                <li> I first applied a Gaussian Blur to the aligned image -- Using a Gaussian blur before edge detection can help improve the performance of edge detection, especially in noisy images like the ones captured by Sergei Prokudin-Gorskii.
+                     The Gaussian blur helps smooth the image and reduce noise, which resulted in a better edge detection algorithm. 
+                </li>
+
+                <li>
+                    Next, I converted the blurred colored image to Grayscale -- this is a standard preprocessing step for edge detection because it helps isolate and emphasize the relevant information needed to indentify edges.
+                </li>
+
+                <li>
+                    This I applied Histogram equalization which is a technique used to enhance the contrast in an image by redistributing the intensity levels. 
+                    Overall, I implemented this step to make the edges more prominent which will help locate the borders of the images more easily. 
+                </li>
+
+                <li>
+                    After Histogram equalization, I applied a bilateral filter which is similar to the Gaussian Blur as it helps smooth the images while preserving edges.
+                </li>
+
+                <li>
+                    Before I could apply the edge detection algorithm, I downscaled the image until either the width or height of the image was less than 200px. Downscaling helps with noise reduction, and it leads to a faster and more efficient process.
+                </li>
+
+                <li>
+                    Finally, I applied the Canny Edge Detection Algorithm to process and identify edges.
+                </li>
+
+            </ol>
+
+            <p> To visualize these preprocessing steps, I included the output for each step for the sample image from above: </p>
+
+            
+            
+            <div class="row">
+                
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_2_ex_flowers.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Steps 1 & 2 </p>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_4_ex_flowers.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Steps 3 & 4 </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_5_ex_flowers.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Step 5 </p>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_6_ex_flowers.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Step 6 </p>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+
+
+
+            <div class="row">
+                
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_2_ex_dog.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Steps 1 & 2 </p>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_4_ex_dog.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Steps 3 & 4 </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_5_ex_dog.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Step 5 </p>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_6_ex_dog.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Step 6 </p>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            
+            <div class="row">
+                
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_2_ex_prisoners.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Steps 1 & 2 </p>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_4_ex_prisoners.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Steps 3 & 4 </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_5_ex_prisoners.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Step 5 </p>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_6_ex_prisoners.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Step 6 </p>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            
+            <div class="row">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_2_ex_railroad.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Steps 1 & 2 </p>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_4_ex_railroad.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Steps 3 & 4 </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_5_ex_railroad.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Step 5 </p>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/step_6_ex_railroad.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Step 6 </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <p> Given the black and white image outputted by step 6, I devised an algorithm to identify the most prominent vertical and horizontal lines in the image that correspond to the image's borders.
+                This process involves iteratively scanning the edges from different directions (left to right, right to left, top to bottom, and bottom to top) while considering specific criteria to determine the 4 borders of the image. 
+
+                For my algorithm, I considered two main criteria to identify the image's borders. 
+                <ul>
+                    <li> First, I defined an "edge proximity threshold" that describes how close an edge needs to be to the image's ends to be considered for cropping (typically 10% of the image width or height). </li>
+                    <li> Second, there is a "coverage percentage threshold" that specifies the minimum percentage of the image's width or height an edge must cover to be considered for cropping (typically 75%). </li>
+                </ul>
+
+                My code iterates through the edges of the image in each direction while evaluating the defined criteria. When an edge meets the criteria, its position is recorded. Once all 4 directions of the image have been process, I calculate the top-left and bottom-right image coordinates and appropriately scale these coordinates up to the dimensions of original image before cropping.
+                 
+            </p>
+            
+            <p> The final result of my auto cropping algorithm is seen below:</p>
+
+            <div class="container grid-container">
+            
+                <div class="row justify-content-center">
+                    <p class="col-4 fw-medium text-center"> Aligned Images </p>
+                    <p class="col-4 fw-medium text-center"> Cropped Images</p>
+                </div>
+                
+                <div class="row align-items-center justify-content-center">
+                    
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/ex_flowers.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Aligned flowers.tif </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/auto_crop_ex_flowers.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Auto Cropped flowers.tif </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                
+                <div class="row align-items-center justify-content-center">
+                    
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/ex_dog.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Aligned dog.tif </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/auto_crop_ex_dog.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Auto Cropped dog.tif </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+
+
+
+                
+                <div class="row align-items-center justify-content-center">
+                    
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/ex_prisoners.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Aligned prisoners.tif </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/auto_crop_ex_prisoners.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Auto Cropped prisoners.tif </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+
+
+
+                <div class="row align-items-center justify-content-center">
+
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/ex_railroad.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Aligned railroad.tif </p>
+                            </div>
+                        </div>
+                    </div>
+
+                
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/auto_crop_ex_railroad.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Auto Cropped railroad.tif </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            
+
+
+        </div>
+
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

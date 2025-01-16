@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title> Project 2 - CS180 </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+    <div class="main-description mt-3">
+
+        <h1 class="display-3 text-center"> CS 180 - Project 2 </h1>
+        <p class="lead text-center fs-3"> Fun with Filters and Frequencies! </p>
+        <p class="text-center fs-4"> Siddharth Nath - <span>sidnath@berkeley.edu</span> </p>
+        <div style="width: 80%;" class="mx-auto">
+            <hr />
+        </div>
+    </div>
+
+    <div class="project-body mx-auto" style="width: 80%;">
+
+
+        <div class="project-overview">
+            <h1 class="display-6"> Project Overview </h1>
+            <p class="lead">
+                This project invovled manipulating many images using filters, frequency analysis, and other image manipulation techniques like the Laplacian and Gaussian Stack!
+            </p>
+        </div>
+
+        <div class="1_1">
+            <h1 class="display-6"> Part 1.1: Finite Difference Operator </h1>
+            <p class="lead">
+                The first part of the project involved leveraging the finite difference operators (Dx = [[-1, 1]] & Dy = [[1], [-1]]) to find the partial derivatives of the cameraman image displayed below. 
+                By convolving this image with Dx filter, I can visualize the vertical edges in the image. Similarly, convolving the input image with the Dy operator helps illustrate the horizontal edges of my image.
+                After calculating both partial derivatives, I calculated the Gradient Magnitude Image by taking the square root of the sum of the squares of both partial derivative images. Finally, to turn this result into an edge image, I binarized the gradient magnitude image by selecting an appropriate threshold (50) and assigning pixels to be either 0 or 1 depending on their value.
+                <br> <br>
+            </p>
+
+            <div class="container grid-container">
+
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/cameraman.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> cameraman.png </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output/1_1/dX_image.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Dx Convolution (Vertical Edges)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output/1_1/dY_image.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Dy Convolution (Horizontal Edges)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output/1_1/gradient_magnitude.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Gradient Magnitude </p>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output/1_1/binarize_gradient_magnitude.jpg" class="card-img-top" alt="Image 3">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Binarized Image (threshold = 50) </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="1_2">
+            <h1 class="display-6"> Part 1.2: Derivative of Gaussian (DoG) Filter </h1>
+            <p class="lead">
+                Due to the noise of the originial cameraman.png image, I first applied a Gaussian filter to better surpress the noise and capture the edges of the image more clearly.
+                To do this, I constructed a Gaussian Filter with kernel size = 7 and sigma = 1.167 and applied this filter on the cameraman image before applying the finite difference operators from above. I chose this filter size because it was large enough to display the edges in a visually pleasing manner without making the edges appear too big.
+                I also used a threshold of 60 compared to the threshold of 50 I used in the previous part as this threshold gave better results!
+                <br> <br>
+            </p> 
+
+            <div class="row">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/cameraman.png" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> cameraman.png </p>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/1_2/gaussian_blur_img.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Blurred cameraman </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/1_2/gaussian_blur_dx.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian Blur Dx Convolution </p>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/1_2/gaussian_blur_dy.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian Blur Dy Convolution</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/1_2/gaussian_blur_gradient_magnitude.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gradient Magnitude of Blurred Image</p>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/1_2/gaussian_blur_binarized_gradient_magnitude.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Binarized Image of Blurred Gradient Magnitude </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            These images appear to have less noise than the images generated without the Gaussian filter. This is because the Gaussian filter acts as a low pass filter that helps eliminate some of the high frequency noise in the original image. 
+            Since we applied the Gaussian filter, the edges of our image appear thicker allowing them to stand out in the final binarized image. Overall, applying the Gaussian filter provided better results.
+
+            <br> <br>
+            To speed up the process and be more computationally efficient, we can utilize the fact that Convolutions are associative. This means we can first apply the finite difference operators on the Gaussian filter to create the Derivative of Gaussian filters (DoGx & DoGy). This operation is much faster because the size of the filters are much smaller than the dimensions of our input image. Now, we only have to convolve our input image once with the DoGx & DoGy filter to get our results.  
+            <hr>
+
+            <div class="row">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/1_2/DoGx_filter.png" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Derivative of Gaussian (X) Kernel </p>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/1_2/DoGy_filter.png" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Derivative of Gaussian (Y) Kernel </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/1_2/DoGx_img.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> DoGx Convolution </p>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/1_2/DoGy_img.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> DoGy Convolution </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/1_2/DoG_gradient_magnitude.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> DoG Gradient Magnitude </p>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/1_2/DoG_binarized_gradient_magnitude.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> DoG Binarized Gradient Magnitude </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            As expected, we get the same results as before because of the associative property of Convolutions
+
+        </div>
+
+        <div class="1_1">
+            <h1 class="display-6"> Part 2.1: Image "Sharpening" </h1>
+            <p class="lead">
+
+                For this next part of the project, I derived the unsharp masking filter which is used to make images appear sharper. 
+                The first step is to take our input image and convolve it with the Gaussian filter to generate a blurred version of the image. Since the Gaussian filter acts as a low pass filter, the resulting blurred image only contains the low frequencies of our original image.
+                Then, we can subtract the blurred version from the original image to get the high frequencies of the image. Since images appear sharper with stronger high frequencies, we can add a disproportionate amount of the high frequences back into our original image to make it appear sharper.
+                For the following examples, I used a Gaussian filter with the kernel size = 9 and sigma = 1.5!  
+                <br> <br>
+            </p> 
+
+            <hr>
+
+            <h5> Example 1 </h5>
+            <div class="row">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/taj.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Original Image -- taj.jpeg </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_1/taj_blur.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Blurred </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_1/taj_high_freq.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> High Frequency </p>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_1/taj_sharp_a_2.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Sharpened Image with a = 2 </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <h5> Example 2 </h5>
+            <p> I applied the same techniques to another image </p> 
+            <hr>
+
+            <div class="row">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_1/berkeley.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Original Image -- berkeley.jpg </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_1/berkeley_blur.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Blurred </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_1/berkeley_high_freq.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> High Frequency </p>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_1/berkeley_sharp_a_5.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Sharpened Image with a = 5 </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <h5> Example 3 </h5>
+            <p>
+            For this final example, I first apply a Gaussian blur to the input image, and then try to sharpen the blurred image to get back the original image.
+            </p>
+            <hr>
+
+
+            <div class="row">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_1/snowball.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Original Image -- snowball.jpg </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_1/snowball_blur.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Blurred </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_1/snowball_sharp_a_5.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Sharpened Image with a = 5 </p>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_1/snowball_sharp_a_10.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Sharpened Image with a = 10 </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="1_1">
+            <h1 class="display-6"> Part 2.2: Hybrid Images </h1>
+            <p class="lead"> 
+                The next part of this project involved taking two separate images and generating hybrid images that takes the high frequencies of one image and applies them to the low frequencies of the other image. 
+                The reason this images are called "hybrid" is that high frequencies normally dominate our perception when it is available at a close viewing distance while only the low frequencies of the image can be seen from far away. 
+                Therefore, blending the high frequency portion of one image with the low-frequency portion of another generates a hybrid image that leads to different interpretations at different viewing distances.
+                <br> <br>
+                To get the low frequency signal, we can apply a Gaussian filter to our images. Then, to get the high frequency signal, we can simply subtract the blurred image from the original image. Using this technqiue, I got the following results:
+            </p>
+
+            <h5> Example 1 </h5>
+            <br>
+            
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/DerekPicture.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Derek </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/nutmeg.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Nutmeg </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_2/hybrid_DerekPicture_nutmeg.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Hybrid </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <h5> Example 2 </h5>
+            <p> For this example, I decided to create a hybrid image of 2 of my favorite basketball players. This example worked well because both faces had similar features! </p>
+            <br>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/steph3.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Stephen Curry </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/lebron3.jpeg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Lebron James </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_2/low_pass_steph3.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Low Pass of Steph Curry </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_2/high_pass_lebron3.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> High Pass of Lebron James </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_2/hybrid_steph3_lebron3.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Hybrid </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <p> For this example, I illustrate the process of creating the hybrid image through frequency analysis. For eaach of the input images, the filtered images, and the resulting hybrid image, I displayed the log magnitude of the corresponding Fourier transform</p>
+            <h4> Fourier Analysis Results: </h4>
+            <br>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_2/steph3_fft.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Steph Curry FFT </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_2/lebron3_fft.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Lebron James FFT </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_2/low_pass_steph3_fft.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Low Frequency Steph Curry FFT </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_2/high_pass_lebron3_fft.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> High Frequency Lebron James FFT </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_2/hybrid_gray_steph3_lebron3_fft.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Hybrid FFT </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <h5> Example 3 </h5>
+            <p> For this example, I applied the hybrid technique on my own painting of the Starry Night along with Van Gohs Painting of the Starry Night. The final image added many of the high frequency details of Van Goghs painting onto my own painting! </p>
+            <br>
+
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/painting.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> My Painting </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/starry_night.jpeg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Van Gogh Painting </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_2/hybrid_painting_starry_night.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Hybrid Painting </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <h5> Example 4 </h5>
+            <p> For this example, I combined two professional portrait images -- one of my girlfriend Vishali and one of myself! The resulting hybrid image didn't turn out too well because of the different backgrounds in each image! </p>
+            <br>
+
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/vishali.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Vishali </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/sid.jpeg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Sid </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_2/hybrid_vishali_sid.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Hybrid Photo </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <h5> Example 5 </h5>
+            <p> The following images shows one of the failures I had when creating the hybrid image. The resulting image is only aligned with the eyes of both animals. However, the size of the faces and bodies of the animals are not similar which made it difficult to create a hybrid image even after experiment with different sigma values for the gaussian filters.
+                To mitigate this error, I purposely made the sigma of the high frequency signal image (sloth) very small so that the high frequencies don't appear too prominent from far away. 
+            </p>
+            <br>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/coyote.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Coyote </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/sloth.jpeg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Sloth </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_2/hybrid_coyote_sloth.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Hybrid Animal </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="1_1">
+            <h1 class="display-6"> Part 2.3: Gaussian and Laplacian Stacks </h1>
+            <p class="lead"> 
+                For this part of the project, I created a function to generate Gaussian and Laplacian stacks for images as these stacks are needed in the next part of the project for Multi-resolution blending.
+                <br> <br>
+                To create the Gaussian Stack, I firt took the input image and applied a Gaussian filter on it. To create the successive levels of the Gaussian Stack, I simply applied the Gaussian filter at each level without subsampling. This results in a stack of images with decreasing frequency bands. For the following images, I used a Gaussin filter with kernel size = 21 and sigma = 7
+                <br> <br>
+                To create the Laplacian Stack, I took each pair of consecutive images from the Gaussian Stack and subtracted the lower frequency image from the high frequency image to get sub-band images of high frequencies. I also appended the Laplacian Stack with the last (most blurred) image from the Gaussian Stack. 
+                This gives the Laplacian stack a useful property in which we can now colapse all the images in the Laplacian Stack to get back the original input image.
+            </p>
+
+            <h5> Gaussian and Laplacian Stack of Apple </h5>
+            <hr>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_apple_0.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [0] </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_apple_1.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [1] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_apple_2.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [2] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_apple_3.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [3] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_apple_4.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [4] </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/laplacian_apple_0.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Laplacian [0] </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/laplacian_apple_1.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Laplacian [1] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/laplacian_apple_2.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Laplacian [2] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/laplacian_apple_3.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Laplacian [3] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/laplacian_apple_4.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Laplacian [4] </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <h5> Gaussian and Laplacian Stack of Orange </h5>
+            <hr>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_orange_0.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [0] </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_orange_1.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [1] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_orange_2.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [2] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_orange_3.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [3] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_orange_4.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [4] </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/laplacian_orange_0.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Laplacian [0] </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/laplacian_orange_1.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Laplacian [1] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/laplacian_orange_2.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Laplacian [2] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/laplacian_orange_3.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Laplacian [3] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/laplacian_orange_4.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Laplacian [4] </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <h5> Gaussian Stack of Image Mask </h5>
+            <p> Since we want to blend the apple and orange on the vertical axis, I created a Binary Gaussian Stack for the corresponding mask which has the same image size as the apple and orange </p>
+            <hr>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_mask_0.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Original Mask </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_mask_1.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [0] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_mask_2.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [1] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_mask_3.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [2] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_mask_4.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [3]</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/gaussian_mask_5.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian [4] </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <h5> Blended Laplacian Stack for Apple and Orange </h5>
+            <p> The following images show the blended result for each layer in the laplacian stack -- This gives us a merged version at each frequency band which I can be combined by addition to create the blended image </p>
+
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/mask_apple_0.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> apple [0] </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/mask_orange_0.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> orange [0] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/oraple_0.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> blend [0] </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/mask_apple_1.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> apple [1] </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/mask_orange_1.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> orange [1] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/oraple_1.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> blend [1] </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/mask_apple_2.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> apple [2] </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/mask_orange_2.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> orange [2] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/oraple_2.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> blend [2] </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/mask_apple_3.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> apple [3] </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/mask_orange_3.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> orange [3] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/oraple_3.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> blend [3] </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/mask_apple_4.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> apple [4] </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/mask_orange_4.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> orange [4] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/oraple_4.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> blend [4] </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="1_1">
+            <h1 class="display-6"> Part 2.4: Multiresolution Blending (a.k.a. the oraple!) </h1>
+            <p class="lead"> 
+                <br> <br>
+            </p>
+
+            <div class="row align-items-center justify-content-center">
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_3/final_oraple.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Oraple </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h5> Example 2 - Horizontal Mask </h5>
+            <p>  I repeated the steps above on the following sample images. This time I used a horizontal binary mask to blend these images together! Additionally, I increased the kernel size (21 -> 30) and sigma (7 -> 10) to make sure there was a large enough window size for the binary mask to effectively blend my images together. </p>
+            <br>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/sea.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Sea </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/night.jpeg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Sky </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/gaussian_masks_0.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center" >
+                            <p class="card-text" > Mask </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="row align-items-center justify-content-center">
+   
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/gaussian_masks_1.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Original Mask [0] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/gaussian_masks_2.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian Mask [1] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/gaussian_masks_3.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian Mask [2] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/gaussian_masks_4.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian Mask [3] </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/gaussian_masks_5.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Gaussian Mask [4] </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <p> The following images show the blended masks for each level of the Laplacian Stack </p>
+
+            <div class="row align-items-center justify-content-center">
+   
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/sea_masks_0.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Sea [0] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/sea_masks_1.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Sea [1] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/sea_masks_2.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Sea [2] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/sea_masks_3.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Sea [3] </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/sea_masks_4.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Sea [4] </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="row align-items-center justify-content-center">
+   
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/night_masks_0.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Night [0] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/night_masks_1.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Night [1] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/night_masks_2.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Night [2] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/night_masks_3.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Night [3] </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/night_masks_4.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Night [4] </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="row align-items-center justify-content-center">
+   
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/sea_night_blended_0.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Blend [0] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/sea_night_blended_1.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Blend [1] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/sea_night_blended_2.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Blend [2] </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/sea_night_blended_3.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Blend [3] </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/sea_night_blended_4.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Blend [4] </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output/2_4/output_sea_night.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Sea + Night Sky </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <h5> Example 3 - Irregular Mask </h5>
+        <p> For my last example, I used an irregular binary mask to create my final blended image. To do this, I used photoshop to mask out the area I wanted to blend and to create my binary mask. The final result shows the image of the moon smoothly blending into the picture frame. </p>
+        <br>
+
+        <div class="row align-items-center justify-content-center">
+
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                <div class="card">
+                    <img src="./input/scene.jpeg" class="card-img-top" alt="Image 1">
+                    <div class="card-body text-center">
+                        <p class="card-text"> Input Image </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                <div class="card">
+                    <img src="./input/moon5.jpeg" class="card-img-top" alt="Image 3">
+                    <div class="card-body text-center">
+                        <p class="card-text"> Moon </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                <div class="card">
+                    <img src="./input/scene_mask.jpeg" class="card-img-top" alt="Image 1">
+                    <div class="card-body text-center" >
+                        <p class="card-text" > Irregular Mask </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row align-items-center justify-content-center">
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card">
+                    <img src="./output/2_4/output_moon_scene.jpg" class="card-img-top" alt="Image 1">
+                    <div class="card-body text-center">
+                        <p class="card-text"> Final Output Image </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="project-insight">
+            <h1 class="display-6"> Project Insights </h1>
+            <p class="lead">
+                I really enjoyed completing this project and learning more about filters and frequencies and their applications to image manipulation. My favorite part was applying the techniques I implemented on my own images!
+            </p>
+        </div>
+
+
+    </div>
+
+
+
+
+    
+</body>
+
+
+
+</html>
