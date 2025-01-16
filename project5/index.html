@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title> Project 5 - CS180 </title>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+    <div class="main-description mt-3">
+
+        <h1 class="display-3 text-center"> CS 180 - Project 5 </h1>
+        <p class="lead text-center fs-3"> Building Neural Radiance Field (NeRFs) </p>
+        <p class="text-center fs-4"> Siddharth Nath - <span>sidnath@berkeley.edu</span> </p>
+        <div style="width: 80%;" class="mx-auto">
+            <hr />
+        </div>
+    </div>
+
+    <div class="project-body mx-auto" style="width: 80%;">
+
+
+        <div class="project-overview">
+            <h1 class="display-6"> Project Overview </h1>
+            <p class="lead">
+                In this project I build a NeRF model to reconstruct a 3D representation of a scene from 2D images!
+                This projected required me to use PyTorch to build a (MLP) network with Sinusoidal Positiona Encoding to create a neural field that can represent a 2D image (Part 1) and use a neural radiance field to represent a 3D space (Part 2).
+            </p>
+        </div>
+
+        <div class="1_1">
+            <h1 class="display-6"> Part 1: Fit a Neural Field to a 2D Image </h1>
+            <br>
+            <h5> Network </h5>
+            <p class="lead">
+                The first part of the project involved creating a Multilayer Perceptron (MLP) network with Sinusoidal Positional Encoding (PE) that takes in the 2D pixel coordinates and outputs the 3D pixel rgb colors for a given image.
+                We can model the Neural Field as a function \(F : { \{u, v\} \mapsto \{u, v, b\} }\). The corresponding network architecture is shown below:
+                <br> <br>
+                <div class="mx-auto w-50">
+                    <img src="./images/model1.jpg" class="img-fluid" alt="Responsive image">
+                </div>
+                For this model to be effective, I injected a Sinusoidal Positional Encoding (PE) layer at the beginning of the network that is used to expand the dimensionality of the input tensor. PE can by expressed as the following function that maps a 2D coordinate to a \(2 + (4 * L)\) dimensional vector:
+                $$ PE(x) = \{x, sin(2^0\pi x), cos(2^0\pi x), sin(2^1\pi x), cos(2^1\pi x), ..., sin(2^{L-1}\pi x), cos(2^{L-1}\pi x) \}$$
+
+            </p>
+
+            <br>
+            <h5> Dataloader </h5>
+            <p>
+                If we are working working with high resolution images, it may be difficult to train the network with all pixels at every iteration because of GPU memory limits.   
+                Therefore, I implemented a dataloader that randomly samples the colors and coordinates of N pixels at every iteration in my training loop. In each iteration, the N x 2 2D coordinates are fed as inputs into the network and the predictions are compared with the groundtruth N x 3 pixel colors. 
+            </p>
+            
+            <br>
+            <h5> Training: Loss Function, Optimizer, and Metrics </h5>
+            <p >
+                For this model, I use the mean squared error (MSE) and the loss function along with the Adam optimizer initialized with a learning rate of 0.01. 
+                I used a batch size of 10000 (N) and trained my model for 1000 iteraterations. 
+                Along with MSE, I used the Peak signal-to-noise ration (PSNR) metric to better measure the reconstruction quality of the network's predicted image. 
+                By normalized the images to [0, 1], we can easily compute PSNR as:
+                $$ PSNR = 10 * log_{10} \left(\frac{1}{MSE}\right)$$
+            </p>
+
+            <h5> Results </h5>
+            <p class="lead">
+                
+            </p>
+            
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./data/fox.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Groundtruth </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/default_14_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Prediction </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            The process of optimizing the network to fit on this image is shown below:
+
+            <br> <br>
+            
+            
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-3 col-md-3 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/default_0_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 0 </p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/default_3_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 3 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/default_7_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 7 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/default_10_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 10 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/default_14_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 14 </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            Here is a plot showing the training PSNR across my training epochs:
+
+            <br> <br>
+
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/default_psnr.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> PSNR Plot across 1000 iterations </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/default_mse.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> MSE Plot across 1000 iterations </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <h5> Hyperparameter Tuning </h5>
+            <p class="">
+                To improve the model's results, I tuned two of the network's paramters: learning rate (lr) & the channel size
+                The results of the hyperparameter tuning are displayed below:
+            </p>
+
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/learning_rate_psnr.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Learning Rate PSNR </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/channel_size_psnr.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Channel Size PSNR </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="font-weight-bold">
+                Looking at the PSNR plot for the learning rate parameters, I realized that the larger learning rate (lr = 1e-2) converged much slower than the other two learning rates (lr = 1e-3 & lr = 5e-3). 
+                Out of these two learning rates, lr = 5e-3 achieves a slightly higher PSNR than lr = 1e-3! 
+            </p>
+            <p class="font-weight-bold">
+                The results of the channel size parameters shows that setting the chennel size to 512 is problematic and prevents the model from achieving a high PSNR. Between setting the channel size to 128 and 256, it is evident that the having the channel size at 256 achieves a slighly higher PSNR.
+            </p>
+
+            The final predicted image for the best hyperparameter are shown below along with a comparison to the default network's prediction.
+
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/lr=5e-3_14_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> lr=5e-3 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/default_14_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Default Network </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/channel_size=256_14_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> channel size = 256 </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="font-weight-bold">
+                Although there isn't a significant difference, there is more crosshatching present in the default network's prediciton compared to the other two model predictions.
+            </p>
+
+
+
+
+            <h5> Training MLP on my own image! </h5>
+            <p class="font-weight-bold">
+                I also trained my model on an image of my dog Snowball. I trained for 1000 iterations using a learning rate of 5e-3 and setting the channel size to 128. The results are shown below:
+            </p>
+
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./images/snowball.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Groundtruth </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/snowball_16_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Prediction </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            The process of optimizing the network to fit on this image is shown below:
+
+            <br> <br>
+            
+            
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-3 col-md-3 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/snowball_0_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 0 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/snowball_4_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 4 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/snowball_8_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 8 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/snowball_12_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 12 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part1/snowball_16_prediction.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 16 </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        
+
+        <div class="1_2">
+            <h1 class="display-6"> Part 2: Fit a Neural Radiance Field from Multi-view Images </h1>
+            <p class="lead">
+
+                For part 2 of this project, I am using a dataset consisting of multi-view calibrated 200 x 200 images taken of a Lego scene. 
+                Now that we are working in 3D, we can model the Neural Radiance Field as a function \(F : { \{x, y, z, \theta, \phi \} \mapsto \{r, g, b, \sigma\} }\).
+                
+                <br> <br>
+                
+                <h3> 2.1: Create Rays from Cameras</h3>
+                <hr>
+
+                <h5> Camera to World Conversion </h5>
+
+                The first helper function I implemented is used to convert a point from the camera space to the world space.
+                We can describe the transformation between the world space \(X_w : (x_w, y_w, z_w) \) and the camera space \(X_c : (x_c, y_c, z_c) \) by a rotation matrix \(R_{3x3} \) a translation vector \(t\) where:
+                $$ 
+                \begin{bmatrix}
+                x_c \\
+                y_c \\
+                x_c \\
+                1 \\
+                \end{bmatrix}
+
+                = 
+
+                \begin{bmatrix}
+                R_{3x3} & t \\
+                0_{1x3} & 1 \\
+                \end{bmatrix}
+
+                \begin{bmatrix}
+                x_w \\
+                y_w \\
+                z_w \\
+                1 \\
+                \end{bmatrix}
+                $$
+
+                Therefore, to model the the transformation between the camera and world space, we take the inverse of the extrinsic world-to-camera (w2c) matrix 
+                \(
+                \begin{bmatrix}
+                R_{3x3} & t \\
+                0_{1x3} & 1 \\
+                \end{bmatrix} 
+                \)
+                to get the camera-to-world (c2w) transformation matrix.
+                
+            </p> 
+
+            <p>
+                <mark>  I implemented this transformation function to support batched coordinates in PyTorch by multiplying the provided c2w matrix by the homogeneous coordinates for the input coordinates. </mark>
+            </p>
+
+            <h5> Pixel to Camera Coordinate Conversion </h5>
+
+            The next helped function I implemented is used to convert pixels into camera coordinates. Since I know the camera's focal length \( (f_x, f_y) \) and the principal point \( o_x = width/2, o_y = height/2 \), we can generate the intrinsic matrix 
+            \(K\) which is defined as:
+            $$ 
+            \begin{bmatrix}
+                f_x & 0 & o_x \\
+                0 & f_y & o_y \\
+                0 & 0 & 1 \\
+            \end{bmatrix} 
+            $$
+
+            <p>
+                <mark>  Using the provided intrinsic matrix K, I can project 3D points \( (x_c, y_c, z_c) \) from the camera coordinate system into the 2D \( (u, v) \) points of the pixel coordinate system. </mark>
+            </p>
+            
+            <h5> Pixel to Ray </h5>
+            
+            Using the previous two functions, I implemented another function that converts batched pixel coordinates to rays with origin and normalized direcition.
+            <br> <br>
+            <p>
+                <mark>  Using the provided intrinsic matrix K and the camera-to-world transformation matrix, I first extracted the ray origin vector \(r_o \in \mathbb{R_3} \) which can be found from the w2c matrix. Next I calculated the ray direction for each \( (u, v) \) pixel by choosing a point along the ray where the depth = 1 and using the provided camera intrinsics and extrinsics to get the normalized world space coordinates. </mark>
+            </p>
+
+            <br>
+            
+            <h3> 2.2: Sampling</h3>
+
+            <hr>
+            
+            <h5> Sampling Rays from Images </h5>
+
+            <p>
+                Now that we know the camera intrinsics & extrinsics, we can use the functions implemented above to convert the pixel coordinates into ray origins and ray directions. 
+                <br> <br>
+                <mark> 
+                    To implement this, I build a custom PyTorch Dataset class that first samples all the rays from each image. 
+                    Since the training data set contains 100 200x200 dimensional images, I generated a (100 * 200 * 200, 3) UV pixel coordinate grid. 
+                    Given this grid of coordinates, I first account for the offset from the image coordinate to the pixel center by addiing 0.5 to all the values. 
+                    Then I use my pixel_to_ray function and pass in the corresponding c2w matrix for each image and concatenate the results to generate the ray_origin and ray_direction vectors for all 4000000 pixel coordinates.
+                    With this generated data, my Dataset class can now sample a subset of rays origins, ray directions, and pixel values for any given batch size N!
+                </mark>
+            </p>
+            
+            <h5> Sampling Points along Rays </h5>
+
+            <p>
+                After being able to sample rays from images, i implemented a function that discritizes each ray into samples that live in the 3D space. 
+                <br> <br>
+                <mark> To do this, I uniformly created some samples along the ray using t = np.linspace(near, far, n_samples). For the lego scene that we have, we can set near=2.0 and far=6.0. Additionally, to prevent overfitting during training, I added pertubation to the points such that every location along the ray is accounted for; this was done by computing t = t + (np.random.rand(t.shape[0]) * t_width) where t is set to be the start of each interval.  </mark>
+                
+            </p>
+
+            <br>
+            <h3> 2.3: Putting the Dataloading All Together</h3>
+
+            <hr>
+
+            The images below visualize the cameras, rays, and the sampled points along each ray using the functions I implemented:
+            <br> <br>
+            <h5> View 1 - All rays/points </h5>
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/render1a.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> View 1a </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/render1b.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> View 1b </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h5> View 2 - Random rays from the first image </h5>
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/render2a.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> View 2a </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/render2b.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> View 2b </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h5> View 3 - Random rays from the top-left corner of the first image </h5>
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/render3a.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> View 3a </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/render3b.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> View 3b </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <br>
+
+            <h3> 2.4: Neural Radiance Field</h3>
+
+            <hr>
+
+            <p>
+                Now that I can generate 3D sample points, I had to modify the network from part 1 of the project such that the network will now predict the density along with color for the samples in 3D. To do this, I made three main changes to the previous network:
+                <ol>
+                    <li> The input of the network is now the 3D world coordinates along with the corresponding 3D ray direction. Additionally, the model needs to output two values: the color and the density for the 3D points. </li>
+                    <li> Another change I made is making the MLP network deeper since the task of optimizing a 3D scene is more complex that the task of fitting the network to a 2D image.  </li>
+                    <li> Since the network is deeper, I inject the positional encoded inputs back into the network through concatenation </li>
+                </ol>
+                <br>
+            </p>
+            
+            This network is shown below:
+            <br> <br>
+            <div class="mx-auto w-75">
+                <img src="./images/model2.png" class="img-fluid" alt="Responsive image">
+            </div>
+            <br> <br>
+            <mark>
+                To summarize, the model takes in as input the \( (N, 32, 3) \) tensor of points sampled from rays along with the \((N, 3)\) size tensor of the batched ray directions. Since my previous positional encoding implementation takes in 2D inputs, I first flattened the sampled points by converting it from size \((N, 32, 3)\) into size \(( N * 32, 3) \). After the positional encoding step, I reshape the result back into the original 3D shape.
+                Another important aspect to note is that I had to reshape and expand the dimensions of the positionally encoded ray_directions in order to inject the data back into my model. Using broadcasting and torch.expand, I was able to accomplish this.
+            </mark>
+            
+            <br> <br>
+
+            <h3> 2.5: Volume Rendering </h3>
+
+            <hr>
+
+            <p>
+                In order to generate a predicted image, I had to implement a volume rendering function that computes the pixel colors based of the network's outputted densities and RGB values for the sample points along each ray.
+                To accomplish this, we treat the pixel color as a weighted average of the RBG values for the sampled points on each ray and calculate:
+                $$
+                C = \sum_{i=1}^N T_i*(1 - e^{-\sigma_i*\delta_i})*c_i
+                $$
+                In this equation, \(T_i\) is the probability of the ray not terminating before sample location i while \(e^{-\sigma_i*\delta_i}\) is the probability of terminating at sample point i.
+            </p>
+
+            <p>
+                <mark>  
+                    To implement the volume rendering equation for a batch of samples along a ray, I used PyTorch so that the loss can backpropagate through this function. To efficiently vectorize the code, I took advantage of broadcasting and torch functions such as torch.cumsum to efficiently compute the value shown above.
+                    After implementing this function, I was able to pass in the the predicted density and RGB values for each sampled ray point from the output of the mlp and return the pixel colors to assemble the predicted image.
+                    Using the rendered color, I calculate the MSE loss by comparing the predicted rendered colors to the groundtruth pixel rgb values at each iteration to train the mlp. 
+                </mark>
+            </p>
+
+            <br>
+
+            <h3> Results </h3>
+
+            <hr>
+
+            I trained the MLP network using the Adam optimizer with a learning rate of 5e-4.    
+            After training for 3200 iterations (8 epochs) with a batch size of 10000 rays per gradient step I got decent results:
+
+            The grid of images below displays the process of optimizing the model across 3200 iterations for the first validation image:
+            <br> <br>
+
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_3200_val_0_0.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 0 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_3200_val_0_1.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 1 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_3200_val_0_2.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 2 </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_3200_val_0_3.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 3 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_3200_val_0_4.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 4 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_3200_val_0_5.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 5 </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_3200_val_0_6.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 6 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_3200_val_0_7.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 7 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_3200_val_0_8.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Epoch 8 </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            Additionally, here are some plots displaying the model's performance over 3200 iterations:
+            <br> <br>
+
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_3200_psnr.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Training PSNR </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_3200_mse.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Training MSE </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_3200_val_psnr.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Validation PSNR on Image 1 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_3200.gif" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Rendered Video (Test Data) </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <hr>
+
+            I decided to retrain my model, this time for 6400 iterations, and I got the following results:
+            <br> <br>
+
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_6400_psnr.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Training PSNR </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_6400_mse.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Training MSE </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_6400_val_psnr.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Validation PSNR on Image 1 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part2/nerf_6400.gif" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Rendered Video (Test Data) </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <mark> 
+                One issue I had while implementing this project was trying to generate validation/test predictions. 
+                To do this I had to sample 40000 rays_o, rays_d, and pixels from my validation/test dataset (for each image) and run the model with these inputs. However, I ended up getting a CUDA out-of-memory error because of memory limits which I got around by batching the 40,000 rays into 4 batches of 10,000 rays and combining the rendered colors to get the output image. 
+            </mark>
+
+        <br> <br>
+        <div class="project-insight">
+            <h1 class="display-6"> Project Insights </h1>
+            <p class="lead">
+                I really enjoyed completing this project and learning more about how I cam implement a NeRF from scratch using PyTorch. This project also helped me better understand the mathematical reasoning behind how NeRFs work!
+            </p>
+        </div>
+    </div>
+    
+</body>
+
+</html>

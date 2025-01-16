@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title> Project 4 - CS180 </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+    <div class="main-description mt-3">
+
+        <h1 class="display-3 text-center"> CS 180 - Project 4 </h1>
+        <p class="lead text-center fs-3"> Image Warping and Mosaicing </p>
+        <p class="text-center fs-4"> Siddharth Nath - <span>sidnath@berkeley.edu</span> </p>
+        <div style="width: 80%;" class="mx-auto">
+            <hr />
+        </div>
+    </div>
+
+    <div class="project-body mx-auto" style="width: 80%;">
+
+        <div class="project-overview">
+            <h1 class="display-5"> Project 4A Overview </h1>
+            <p class="lead">
+                In this assignment I learned about the different aspects of image warping and some of its applications including image mosaicing. This project required taking my own photograps, calculating homographies, and using them to warp images along with many other image manipulation techniques.
+            </p>
+        </div>
+
+        <div class="1_1">
+            <h1 class="display-6"> Part 1: Shoot and Digitize Pictures </h1>
+            <p class="lead">
+                Before applying any of the interesting image warping and mosaicing techniques, I first had to shoot a variety of pictures to test my implementations. To capture high quality photopgraphs, I used my phone camera and used the exposure and focus locking mode so that the camera settings don't change across frames.
+                Some other guidelines I followed while shooting images were making sure to overlap the fields of view of my images and using the highest resolution setting.
+            </p>
+
+            <h5> Images for Warping </h5>
+            <p> Below I listed the sample images I used for warping </p>
+
+            <div class="container grid-container">
+
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/lib1.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Doe Library 1 </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/lib2.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Doe Library 2</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/lks1.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Li Ka Shing 1</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/lks2.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Li Ka Shing 2 </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <h5> Images for Rectification </h5>
+            <p> Below I listed the sample images I used for image rectification </p>
+            
+            <div class="container grid-container">
+
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/painting.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> My Painting! </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/poster.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Poster </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/id.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Student ID </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <h5> Images for Mosaic </h5>
+            <p> Below I listed the sample images I used to blend and create a mosaic. Each mosaic consists of 2-3 images from the same scene! </p>
+
+            <div class="container grid-container">
+
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/lr1.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Living Room 1 </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/lr2.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Living Room 2 </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/lr3.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Living Room 3 </p>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
+
+
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/view1.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Apartment View 1 </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/view2.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Apartment View 2 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/view3.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Apartment View 3 </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/bart1.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Bart 1 </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/bart2.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Bart 2 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/bart3.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Bart 3 </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <div class="1_2">
+            <h1 class="display-6"> Part 2: Recover Homographies </h1>
+            <p class="lead">
+                In order to warp my images into alignment, I first needed to recover the parameters of the transofmration between each pair of images. For this project, we can represent the image transformation as a homograpy p' = H*p where H is a 3x3 matrix with 8 degrees of freedom - 
+                To do this, I implemented a function computeH that takes in n point correspondences from the two images and solved for the matrix H using least squares. Using the tool linked <a href="https://inst.eecs.berkeley.edu/~cs194-26/fa22/upload/files/proj3/cs194-26-aex/tool.html" target="_blank">here</a>, I labeled corresponcences for both input images. By providing more than 4 correspondences, I can create an overdetermined system of equations that gets solved with least-squares! The reason we use more than 4 points is that simply using 4 points might not be sufficient and may by unstable and prone to noise!
+                <br> <br>
+                To compute the Homography Matrix H, I solved the system below:
+                <img src="./input/homography.jpg" class="card-img-top" alt="Image 1">
+                Given multiple pairs of correspondences, we can contruct a matrix similar to this and solve using Least Squares:
+                <br> <br>
+                <img src="./input/hmatrix.webp" class="card-img-top" alt="Image 1">
+            </p> 
+
+        <div class="1_1">
+            <h1 class="display-6"> Part 3: Warp The Images </h1>
+            <p class="lead">
+                Given the parameters of the homograph (in matrix H), I wrote a function that produces a warp from one input image onto the other. To do this, I utilized the inverse of the Homograph Matrix (H') to perform inverse warping. One aspect that I needed to consider was the size of the resulting warped image. To do this I applied the Homography matrix H to the four corners of the inpute image and calculated the min and max (x, y) coordinates to calculate the resulting image size.
+                The results are shown below:
+            </p> 
+
+            <hr>
+
+            <div class="container grid-container">
+
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/lib1.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Library 1 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/lib2.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Library 2 </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./outputA/lib_warp.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Library Warped </p>
+                            </div>
+                        </div>
+                    </div>
+                   
+
+                </div>
+            </div>
+            <div class="container grid-container">
+
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/lks1.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Li Ka Shing 1 </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./input/lks2.jpeg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Li Ka Shing 2 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./outputA/lks_warp.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Li Ka Shing Warped </p>
+                            </div>
+                        </div>
+                    </div>
+                   
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+
+        <div class="1_1">
+            <h1 class="display-6"> Part 4: Image Rectification </h1>
+            <p class="lead"> 
+                The next part of this project involved rectified images with planar surfaces and warping them so that the plane is frontal-parallel. Since I am only working with a single image to perform the rectification, I had to define the coorespondences manually to calculate the resulting Homography. 
+                <br>
+            </p>
+
+            <hr>
+            <h5> Rectification 1 - My Painting </h5>
+            
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/painting.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Original Painting </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./outputA/rectified_painting.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Rectified Painting </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./outputA/paining_close.png" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Painting Close-up </p>
+                        </div>
+                    </div>
+                </div>
+
+              
+            </div>
+
+            <hr>
+            <h5> Rectification 2 - Poster in my room </h5>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/poster.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Original Poster </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./outputA/rectified_poster.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Rectified Poster </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./outputA/poster_close.png" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Poster Close-up </p>
+                        </div>
+                    </div>
+                </div>
+
+              
+            </div>
+
+            <hr>
+            <h5> Rectification 3 - My Student ID </h5>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input/id.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Original ID </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./outputA/rectified_id.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Rectified ID </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./outputA/id_close.png" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> ID Close-up </p>
+                        </div>
+                    </div>
+                </div>
+              
+            </div>
+
+
+        <div class="1_1">
+            <h1 class="display-6"> Part 5: Blend the images into a mosaic </h1>
+            <p class="lead"> 
+                For this part of the project, I captured either two or three images for each scene and used point coorespondences and the resulting Homography Matrix to warp the images onto a plane. Additionally, I implemented the blending techniques from Project 2 using Laplacian and Gaussian Stacks to make the resulting image more visually pleasing.
+                <br>
+            </p>
+
+            <hr>
+            <h5> Mosaic 1 - My Apartment </h5>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="input/lr1.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Living Room 1 </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="input/lr2.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Living Room 2 </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="input/lr2.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Living Room 3 </p>
+                        </div>
+                    </div>
+                </div>
+ 
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="outputA/lr_stitched.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Stitched Living Room </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="outputA/lr_blend.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Blended Living Room </p>
+                        </div>
+                    </div>
+                </div>
+ 
+            </div>
+
+            Because of some human error when I took the images of my apartment, the moasiac with all three images did not turn out as expected. Instead, I created the mosaic using just the first two images! This goes to show the importance of taking accurate images and carefully selecting the point correspondences as minor human errors can negatively impact the results.
+
+            <hr>
+            <h5> Mosaic 2 - View From Above My Apartment </h5>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="input/view1.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> view 1 </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="input/view2.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> view 2 </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="input/view3.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> view 3 </p>
+                        </div>
+                    </div>
+                </div>
+ 
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="outputA/view_stitched.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> View Stitched </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="outputA/view_blend.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> View Blended </p>
+                        </div>
+                    </div>
+                </div>
+ 
+            </div>
+
+            <hr>
+
+            <h5> Mosaic 3 - The Bart Station </h5>
+
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="input/bart1.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Bart 1 </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="input/bart2.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Bart 2 </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="input/bart3.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Bart 3 </p>
+                        </div>
+                    </div>
+                </div>
+ 
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="outputA/bart_stitched.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> View Stitched </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="outputA/bart_blend.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> View Blended </p>
+                        </div>
+                    </div>
+                </div>
+ 
+            </div>
+
+        </div>
+
+        <div class="project-insight">
+            <h1 class="display-6"> Project 4A Insights </h1>
+            <p class="lead">
+                I really enjoyed completing this project and learning more about how I cam implement warping and image rectification using linear algebra and image maniputation technqiues. My favorite part was seeing the results of the image rectification of images of my choosing!
+            </p>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="project-overview">
+        <h1 class="display-5"> Project 4B Overview </h1>
+        <p class="lead">
+            For the second part of the project, I developed a system for automatically stitching images into a mosaic. This involved automatically detecting keypoints across images, matching the coorespondences, and constructing the mosaic using the Homograpy matrix computed with a carefully chosen subset of the keypoints. To do this, I referenced the paper <a href="https://inst.eecs.berkeley.edu/~cs180/fa23/hw/proj4/Papers/MOPS.pdf"> "Multi-Image Matching using Multi-Scale Oriented Patches" by Brown et al. </a> and made some simplications. Here are the steps I took to complete this project:
+        </p>
+        <ol>
+            <li> Detect Corner Features </li>
+            <li> Apply Adaptive Non-Maximal Supression </li>
+            <li> Extract Feature Descriptors </li>
+            <li> Implement RANSAC to compute Homograpy </li>
+            <li> Stitch and Blend Mosaic </li>
+        </ol>
+    </div>
+
+    <div class="1_1">
+        <h1 class="display-6"> Part 1: Detect Corner Features </h1>
+        <p class="lead"> 
+            The first step in this project required generating a set of potential keypoints using the Harris Corner Detector. Since keypoints of an image are generally located at corners and sharp edges, I used the Harris Corner Detector to automatically compute a large set of keypoints. 
+            This method takes in a Black & White image and assigns each pixel an "h" value indicating how relevant the point is. Therefore, a higher "h" score represents points part of sharper corners/edges.
+            <br> <br>
+            The results of running the Harris Corner Detector on each of my chosen mosaic images are shown below:
+        </p>
+    </div>
+
+    <hr>
+    <h5> Harris Points 1 - My Apartment </h5>
+
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/harris_corners_lr1.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Living Room 1 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/harris_corners_lr2.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Living Room 2 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/harris_corners_lr3.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Living Room 3 </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <hr>
+    <h5> Harris Points 2 - Apartment View </h5>
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/harris_corners_view1.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Apartment View 1 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/harris_corners_view2.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Apartment View 2 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/harris_corners_view3.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Apartment View 3 </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <hr>
+    <h5> Harris Points 3 - Bart Station </h5>
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/harris_corners_bart1.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Bart 1 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/harris_corners_bart2.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Bart 2 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/harris_corners_bart3.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Bart 3 </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="1_1">
+        <h1 class="display-6"> Part 2: Apply Adaptive Non-Maximal Supression </h1>
+        <p class="lead"> 
+            Adaptive Non-Maximal Supression (ANMS) is a technique that I used to filter down the number of keypoints generated from the Harris Corner Detection Method. From the results above, it is clear there there are too many key points to work with as working with such a large number of points will make the matching process more difficult and expensive. 
+            This algorithm works by assigning each keypoint an r score which is defined as:
+            <img src="./input/anms_equation.png" class="card-img-top" alt="Image 1">
+            This metric takes into account both the distances between keypoints and the outputted strengths of the key points computed from the Harris Corner method. Finally, ANMS returns the n keypoints with the largest "r" score! For this project, I played around with different values of n and set n to be 500. Therefore, each of the following images contains 500 keypoints that were filtered using ANMS:
+            <br> <br>
+        </p>
+    </div>
+
+    <hr>
+    <h5> ANMS Points 1 - My Apartment </h5>
+
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/anms_lr1.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Living Room 1 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/anms_lr2.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Living Room 2 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/anms_lr3.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Living Room 3 </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <hr>
+    <h5> ANMS Points 2 - Apartment View </h5>
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/anms_view1.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Apartment View 1 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/anms_view2.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Apartment View 2 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/anms_view3.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Apartment View 3 </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <hr>
+    <h5> ANMS Points 3 - Bart Station </h5>
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/anms_bart1.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Bart 1 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/anms_bart2.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Bart 2 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/anms_bart3.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Bart 3 </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="1_1">
+        <h1 class="display-6"> Part 3: Extract Feature Descriptors </h1>
+        <p class="lead"> 
+            So far, the harris corner keypoint detection is produced keypoints for each image individually -- there is no way of knowing the relationship between the keypoints in one image and the keypoints in another. In order to eventually stitch the images together, I need to first identify key point correspondences between two images.
+            To accomplish this, I extracted feature descriptors for each keypoint which was done by capturing a 40x40 pixel patch around each point, downsizing the patch into a normalized 8x8 pixel descriptor. By downsizing and normalizing the keypoint descriptors, it is a much easier and computationally feasible way to iterate through all keypoint pairs and determine the corresponcences. 
+            <br> <br>
+            Take a look at a sample 40x40 patch and the downsized 8x8 feature descriptor:
+        </p>
+    </div>
+
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/sample_patch.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> 40x40 Patch </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/sample_descriptor.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> 8x8 Descriptor </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <p class="lead"> 
+        Using these descriptors, I then began the process of matching the keypoints between two images. To get this done, I calculated the ratio of the distances between the first and second nearest keypoint neighbors and only considered the keypoint and the nearest neighbor if this ratio was below a set threshold. 
+        For my mosaics, I switched between setting the threshold to 0.5 and 0.4.
+        <br> <br>
+        Here are the resulting matching features between images:
+    </p>
+
+    <hr>
+    <h5> Matched Features - Living Room </h5>
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/matched_features_lr1_left.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Living Room 1 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/matched_features_lr2_left.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Living Room 2 (Left) </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/matched_features_lr2_right.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Living Room 2 (Right) </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/matched_features_lr3_right.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Living Room 3 </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <h5> Matched Features - Apartment View </h5>
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/matched_features_view1_left.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Apartment View 1 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/matched_features_view2_left.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Apartment View 2 (Left) </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/matched_features_view2_right.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Apartment View 2 (Right) </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/matched_features_view3_right.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Apartment View 3 </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <h5> Matched Features - Bart </h5>
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/matched_features_bart1_left.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Bart 1 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/matched_features_bart2_left.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Bart 2 (Left) </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/matched_features_bart2_right.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Bart 2 (Right) </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/matched_features_bart3_right.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Bart 3 </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="1_1">
+        <h1 class="display-6"> Part 4: RANSAC </h1>
+        <p class="lead"> 
+            To further filter down the number of keypoints, I used RANSAC - Random sample consensus - a robust method for filtering out all outliers within our keypoint dataset. Even after matching feature descriptors using the method listed above, it is still possible to end up with some poor correspondences. Therefore, RANSAC is used as a final filtering step to narrow down the number of keypoints in our images.
+            <br> <br>
+            The steps for implementing RANSAC are as follows:
+            <ol>
+                <li> Select 4 Feature Points at random </li>
+                <li> Compute exact Homography </li>
+                <li> Compute inliers where dist(p', H*p) < ε </li>
+                <li> Keep largest set of inliers </li>
+                <li> Re-compute least-squares H estimate on all the inliers </li>
+            </ol>
+        </p>
+        Here are the results after running RANSAC:
+    </div>
+
+    <hr>
+    <h5> RANSAC - Living Room </h5>
+
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/ransac_lr1_left.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Living Room 1 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/ransac_lr2_left.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Living Room 2 (Left) </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/ransac_lr2_right.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Living Room 2 (Right) </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/ransac_lr3_right.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Living Room 3 </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <p> 
+        For the living room photos, I set the RANSAC distance threshold (ε) to 1 pixels and the feature matching ratio threshold to 0.5. 
+        These parameters produced either 4 or 5 keypoints for the image corresponcences above. The left two images has 4 pairs of corresponcences while the right two images has 5 pairs of corresponcences. 
+        Therefore, if I made these thresholds any tighter the number of keypoints would drop below 4 which would make it impossible to compute the homography H.  
+    </p>
+
+
+    <h5> RANSAC - Apartment View </h5>
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/ransac_view1_left.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Apartment View 1 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/ransac_view2_left.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Apartment View 2 (Left) </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/ransac_view2_right.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Apartment View 2 (Right) </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/ransac_view3_right.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Apartment View 3 </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <p>
+        For the apartment view room photos, I set the RANSAC distance threshold (ε) to 1 pixels and the feature matching ratio threshold to 0.4 which is lower than the threshold I used for the photos above. 
+        I noticed that having the ratio too high would result in too many keypoints and it produced slightly worse results.
+    </p>
+
+
+    <h5> RANSAC - Bart </h5>
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/ransac_bart1_left.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Bart 1 </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/ransac_bart2_left.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Bart 2 (Left) </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/ransac_bart2_right.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Bart 2 (Right) </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/ransac_bart3_right.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Bart 3 </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <p>
+        For the Bart photos, I set the RANSAC distance threshold (ε) to 2 pixels and the feature matching ratio threshold to 0.5.
+        Using the thresholds for the previous images did not work for the bart images because it would produce less than 4 keypoints -- making it impossible for me to calculate the Homography. 
+        Therefore, I increased the thresholds to have more keypoints in my outputted RANSAC iamges.
+    </p>
+
+    <div class="1_1">
+        <h1 class="display-6"> Part 5: Stitch and Blend Mosaic </h1>
+        <p class="lead"> 
+            Finally, using the Homography calculated from the RANSAC keypoints we can perform the same mosaic stitching and blending techniques from part A of the project.
+            Take a look at the results:
+    </div>
+
+    <h5> Mosaic 1 - Living Room </h5>
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/lr1_lr2_stitched.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Stitched Living Room </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/lr1_lr2_blended.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Blended Living Room </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <p>
+        Because of some human error when I took the images of my apartment, the moasiac with all three images did not turn out as expected. Therefore, I created the mosaic using just the first two images! I could have produced a better 3-image mosaic if I had more time to carefully experiment with different hyperparameters (thresholds). 
+    </p>
+
+
+    <h5> Mosaic 2 - Apartment View </h5>
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/view1_view2_stitched.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Stitched Living Room </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/view1_view2_blended.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Blended Living Room </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <p>
+        Similar to the reason above, the moasiac with all three images did not turn out as expected. If I had more time to tune the different thresholding parameters, I could have produced a visually aesthetic 3-image mosaic. Despite this, the result using just the first two images turned out as expected!
+    </p>
+
+    <h5> Mosaic 3 - Bart </h5>
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/bart1_bart2_bart3_stitched.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Stitched Living Room </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="card">
+                <img src="outputB/bart1_bart2_bart3_blended.jpg" class="card-img-top" alt="Image 1">
+                <div class="card-body text-center">
+                    <p class="card-text"> Blended Living Room </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <p>
+        For the Bart images, the final mosaic still had a small alignment issue between the left and middle images. However, the blending between the middle and right two images is much better and has no visible errors.  
+    </p>
+
+    <div class="project-insight">
+        <h1 class="display-6"> Project 4B Insights </h1>
+        <p class="lead">
+            I enjoyed learning how to automatically generate keypoints since this was a tedius process in partA of the project! Additionally, I found it valuable having to read through a research paper and implement the techniques discussed by the authors.
+        </p>
+    </div>
+    
+</body>
+
+</html>

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title> Project 3 - CS180 </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+    <div class="main-description mt-3">
+
+        <h1 class="display-3 text-center"> CS 180 - Project 3 </h1>
+        <p class="lead text-center fs-3"> Face Morphing </p>
+        <p class="text-center fs-4"> Siddharth Nath - <span>sidnath@berkeley.edu</span> </p>
+        <div style="width: 80%;" class="mx-auto">
+            <hr />
+        </div>
+    </div>
+
+    <div class="project-body mx-auto" style="width: 80%;">
+
+
+        <div class="project-overview">
+            <h1 class="display-6"> Project Overview </h1>
+            <p class="lead">
+                In this assignment I produced a "morph" animation of my face into someone else's face, compute the mean of a population of faces, and extrapolate from a population mean to create a caricature of myself.
+                This projected required me to use many image manipulation techniques along with understanding the math behind image affine transformations which was the key to implementing this project. 
+            </p>
+        </div>
+
+        <div class="1_1">
+            <h1 class="display-6"> Part 1: Defining Correspondences </h1>
+            <p class="lead">
+                The first part of the project involved manually defining pairs of corresponding points on the two input images by hand. Before I could do this, I made sure to take a passport-like photo of my face against a plain white background. Then, to make the morphing more simple, I cropped and resized the image of my face to match the dimensions of the sample face provided of George Clooney
+                Using the tool linked <a href="https://inst.eecs.berkeley.edu/~cs194-26/fa22/upload/files/proj3/cs194-26-aex/tool.html" target="_blank">here</a>, I labeled keypoints on the faces for both input images. 
+                <!-- After this tedious step, I had to construct a triangulation of these points to use for the morphing algorithm. To do this, I computed the Delauny triangulation at the m -->
+                <br> <br>
+                The majority of the keypoints were centered around the eyes, mouth, nose, face, ears, and other prominent parts of the faces. In addition to these points, I also added pairs of corresponding points for the 4 corners of the image
+            </p>
+
+            <div class="container grid-container">
+
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part_1/sid_triangulation.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Sid Triangulation </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./output_images/part_1/george_triangulation.jpg" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> George Triangulation </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="1_2">
+            <h1 class="display-6"> Part 2: Computing the "Mid-way Face" </h1>
+            <p class="lead">
+                For the next part of the project, I had to compute the mid-way face of my input images. The first step in doing this was computing the average shape which is the equavalent of taking the average of each keypoint location in the two faces.
+                After doing this, I had to warp each of the input faces into the average shape by implementing an affine warp for each triangle  in the triangulation from the original images into this new shape. 
+                This involved computing an affine transformation matrix M between every pair of corresponding triangles from the Delauny triangulation.
+                <br> <br>
+                To compute the Affine Transformation Matrix, I stacked my corresponding points and solved the equation below - In this equation (x', y') are the coordinates for the mid-way face shape while (x, y) represent the coordinates on the original image. After stacking my points to form the first two matricies show below, I used linear algebra to calculate the unknown Affine Matrix (A):
+                <img src="./output_images/part_2/affine.jpeg" class="card-img-top" alt="Image 1">
+            </p> 
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input_images/sid_small.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Original Sid </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_1/midway_face_shape_triangulation.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Midway Shape of Me and George </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./input_images/george_small.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Original George </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_2/midway_face.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Midway Face of Me and George </p>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_2/warp_sid_george.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> My face warped on Geroge's geometry </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_2/warp_george_sid.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> George's face warped on my geometry</p>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            Overall, the midway face nicely blends the two input images. However, there are some minor flaws because of the misalignment in how both images were taken.
+            
+            <hr>
+
+        <div class="1_1">
+            <h1 class="display-6"> Part 3: The Morph Sequence </h1>
+            <p class="lead">
+                For this next part of the project, I wrote a function that produces a work between both imput images using their paired point correspondences. I created 45 frames of animation showing the morphing result between my face and George Clooney's Face:
+                To get each frame of the morph sequence, I performed the same steps used to calculate the mid-way face from Part 2 but this time using a weighted average!
+            </p> 
+
+            <hr>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <video controls loop>
+                            <source src="output_images/part_3/sid_george_gif.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="card-body text-center">
+                            <p class="card-text"> Morph Sequence </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="1_1">
+            <h1 class="display-6"> Part 4: The "Mean face" of a population </h1>
+            <p class="lead"> 
+                The next part of this project involved working with the Danes dataset, a publicly available dataset of annotated faces. Before working on this dataset, I first wrote a script to extract the keypoints for each face so I could use them later on. 
+                Additionally, I had to resize the image of my face to match the images in this dataset and redo the point correspondence for my face according to the keypoints already annotated on the dataset.
+                <br>
+                <ol>
+                    <li> First I computed the average face shape of the men and women in the dataset. However, since this dataset only contained 7 females, the average face shape I computed does not come close to resembling the average of the entire female population. </li>
+                    <li> Next, I morphed each of the male faces in the dataset to the average male shape and each of the female faces to the average female shape. </li>
+                    <li> Then, I calculated the average face of both populations (males and females) and showed my face warped into the average geometry along with the average face warped into my geometry </li>
+                </ol>
+            </p>
+
+            <h5> Step 1 - Average Face Shape </h5>
+            <br>
+            
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_4/average_male_shape.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Average Male Shape </p>
+                        </div>
+                    </div>
+                </div>
+   
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_4/average_female_shape.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Average Female Shape </p>
+                        </div>
+                    </div>
+                </div>
+
+              
+            </div>
+
+            <h5> Step 2 - Morph faces to average shape </h5>
+            <p> Below I listed few sample morphed images for both males and females </p>
+            <br>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./face_data/01-1m.bmp" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Male 1 </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_4/01-1m_warped.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Male 1 Warped </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./face_data/05-1m.bmp" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Male 2 </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_4/05-1m_warped.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Male 2 Warped </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./face_data/06-1m.bmp" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Male 3 </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_4/06-1m_warped.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Male 3 Warped </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./face_data/07-1m.bmp" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Male 4 </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_4/07-1m_warped.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Male 4 Warped </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr>
+            <br>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./face_data/08-1f.bmp" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Female 1 </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_4/08-1f_warped.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Female 1 Warped </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./face_data/12-1f.bmp" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Female 2 </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_4/12-1f_warped.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Female 2 Warped </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./face_data/14-1f.bmp" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Female 3 </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_4/14-1f_warped.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Female 3 Warped </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./face_data/15-1f.bmp" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Female 4 </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_4/15-1f_warped.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Female 4 Warped </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <h5> Step 3 - Compute average shape </h5>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="output_images/part_4/average_male_face.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Average Male Face </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_4/average_female_face.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Average Female Face </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="output_images/part_4/sid_average_warp.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> My face warped into average </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./output_images/part_4/average_sid_warp.jpg" class="card-img-top" alt="Image 3">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Average male face warped into mine </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            Comparing the Average Male Face Warped Into Mine to the Average Male Face, I noticed that the size of the lips and eyebrows increase. This behavior is expected because the size of my own lips and eyebrows are larger in comparison to the average male face in this dataset!
+
+        <div class="1_1">
+            <h1 class="display-6"> Part 5: Caricatures -- Extrapolating from the Mean </h1>
+            <p class="lead"> 
+                For this part of the project, I produced a caricature of my face by extrapolating from the male population mean that I calculated in the previous step. 
+                To do this I first subtracted the average male face shape from my face shape (my face - average face) which represents the differences in my face from the average male face. To make these differences more prominent, I added a scaled amount of these differences to my original face:
+                <br>
+                <p class="font-weight-bold"> 
+                    <span> my face + alpha * (my face - average face) </span>
+                </p>
+            </p>
+
+            <hr>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="output_images/part_5/alpha_0.25.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> alpha = 0.25 </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="output_images/part_5/alpha_0.5.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> alpha = 0.5 </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="output_images/part_5/alpha_0.75.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> alpha = 0.75 </p>
+                        </div>
+                    </div>
+                </div>
+ 
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="output_images/part_5/alpha_1.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> alpha = 1 </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="output_images/part_5/alpha_1.5.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> alpha = 1.5 </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="output_images/part_5/alpha_2.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> alpha = 2 </p>
+                        </div>
+                    </div>
+                </div>
+ 
+            </div>
+
+            Since my eyebrows, nose, and lips appear larger than the average male face calculated from the Danes dataset, the results show above are expected as these charactersitics of mine become more exaggerated. As alpha increases from 0.25 to 2, the size of my lips and eyebrows increase as well!
+
+        <div class="1_1">
+            <h1 class="display-6"> Bells and Whistles </h1>
+            <p class="lead">
+                For this part, I wanted to see how I would appear as a female. To do this, I utilized the Danes dataset and applied some weighted average warping to see how I would appear if I changed my gender.
+                <br>
+            </p>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="output_images/bells_and_whistles/sid_female_0.5.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> My Weight, Female Weight = (0.5, 0.5) </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="output_images/bells_and_whistles/sid_female_0.75.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> My Weight, Female Weight = (0.25, 0.75) </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="output_images/bells_and_whistles/sid_female_0.9.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> My Weight, Female Weight = (0.1, 0.9) </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="output_images/bells_and_whistles/sid_female_0.99.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> My Weight, Female Weight = (0.01, 0.99) </p>
+                        </div>
+                    </div>
+                </div>
+ 
+            </div>
+
+            As I increase the weight of the average female shape in my weighted average calculation, my morphed face definitely appears more feminine as some "masculine" facial features start becoming less prominent. The biggest takeaway from the images displayed above is that my face becomes more rounded and my facial hair becomes less prominent.
+            Since there were not many females in this dataset, I believe that I could achieve better gender changing results with more data!
+
+        </div>
+
+        <div class="project-insight">
+            <h1 class="display-6"> Project Insights </h1>
+            <p class="lead">
+                I really enjoyed completing this project and learning more about how I cam implement morphing using the skills learned in class like the Affine Transformation. My favorite part was applying the techniques I implemented on my own face!
+            </p>
+        </div>
+    </div>
+    
+</body>
+
+</html>
