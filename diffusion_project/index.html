@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title> Fun With Diffusion Models - CS180 </title>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link href="style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div class="main-description mt-3">
+
+        <h1 class="display-3 text-center"> CS 180 -- Project 5 </h1>
+        <p class="lead text-center fs-3"> Fun With Diffusion Models </p>
+        <p class="text-center fs-4"> Siddharth Nath - <span>sidnath@berkeley.edu</span> </p>
+        <div style="width: 80%;" class="mx-auto">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                <button class="btn btn-outline-primary me-md-2" type="button"
+                    onClick="document.getElementById('image-quilting').scrollIntoView();""> Using the DeepFloyd IF Model </button>
+                <button class=" btn btn-outline-primary" type="button"
+                    onClick="document.getElementById('neural-style-transfer').scrollIntoView();"> Diffusion Models from
+                    Scratch </button>
+            </div>
+            <hr />
+        </div>
+
+    </div>
+
+
+    <div class="project-body mx-auto" style="width: 80%;">
+
+        <div class="project-overview" id="image-quilting">
+            <h1 class="display-5"> Diffusion Project Overview </h1>
+            <p class="lead">
+                In the first part of this project, I used the <a
+                    href="https://huggingface.co/docs/diffusers/api/pipelines/deepfloyd_if">DeepFloyd IF diffusion
+                    model</a>, and implement diffusion sampling loops to perform tasks such as inpainting and creating
+                optical illusions.
+                This project follows the implementation of the paper <a href="https://arxiv.org/pdf/2006.11239">
+                    <i>Denoising Diffusion Probabilistic Models</i> </a>
+            </p>
+
+            <p class="lead">
+                Some of the highlights of this project include:
+            <ul>
+                <li> <a href="#section_1_7_2" class="section-link"><span
+                            class="text-primary-emphasis">Inpainting</span></a> which allows us to modify/edit specific
+                    parts of an image </li>
+                <li> <a href="#section_1_8" class="section-link"><span class="text-primary-emphasis">Visual
+                            Anagrams</span></a> that look different when flipped upside down </li>
+                <li> <a href="#section_1_9" class="section-link"><span class="text-primary-emphasis">Hybrid
+                            Images</span></a> that look different when viewed from different distances </li>
+            </ul>
+            </p>
+        </div>
+
+        <div class="0">
+            <h1 class="display-6"> Part 0: Setting up the DeepFloyd IF Model </h1>
+            <p>
+                DeepFloyd IF is an open-source text-to-image diffusion model trained by Stability AI that has two
+                separate stages. The first stage generates a 64x64 pixel image based on a text prompt. The second stage
+                then uses the first stage's output as a starting point and outputs a higher resulution 256x256 pixel
+                image.
+                It is important to note that the model's text encoder is very large and barely fits on Google Colab's
+                free GPU. Therefore, this project uses some precomputed text embeddings so that the model can be run on
+                Google Colab.
+                <br> <br>
+                After setting up the model, I can use the <code>stage_1</code> and <code>stage_2</code> models to sample
+                images.
+                To sample images from the stage 1 model, I have to pass in a text prompt and the number of inference
+                steps. Inference steps indicate how many denoising steps for the model to take; a higher number of
+                inference steps correlates to higher image quality at the cost of computational cost.
+                For the stage 2 model, I need to pass in the stage 1 output and the number of inference steps.
+                <br> <br>
+                Here are some examples of the model's output:
+            </p>
+
+            <h5> Sample Results from the DeepFloyd IF Model </h5>
+            <p> Below I listed the Stage 1 and Stage 2 model outputs for different text prompts and inference steps.
+            </p>
+
+            <hr>
+            <h6>
+                <p class="text-primary-emphasis">Figure 1: An oil painting of a snowy mountain village</p>
+            </h6>
+            <div class="container grid-container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./images/part0/snow_stage_1_steps_10.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Stage 1 (10 inference steps) </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./images/part0/snow_stage_2_steps_10.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Stage 2 (10 inference steps) </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./images/part0/snow_stage_1_steps_100.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Stage 1 (100 inference steps) </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./images/part0/snow_stage_2_steps_100.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Stage 2 (100 inference steps) </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-danger">
+                TO DO
+            </p>
+
+            <hr>
+            <h6>
+                <p class="text-primary-emphasis">Figure 2: A man wearing a hat</p>
+            </h6>
+
+            <div class="container grid-container">
+
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./images/part0/man_stage_1_steps_10.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Stage 1 (10 inferencesteps) </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./images/part0/man_stage_2_steps_10.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Stage 2 (10 inference steps) </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./images/part0/man_stage_1_steps_100.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Stage 1 (100 inference steps) </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./images/part0/man_stage_2_steps_100.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Stage 2 (100 inference steps) </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-danger">
+                TO DO
+            </p>
+
+            <hr>
+            <h6>
+                <p class="text-primary-emphasis">Figure 3: A rocket ship</p>
+            </h6>
+
+            <div class="container grid-container">
+
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./images/part0/rocket_stage_1_steps_10.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Stage 1 (10 inference steps) </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./images/part0/rocket_stage_2_steps_10.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Stage 2 (10 inference steps) </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./images/part0/rocket_stage_1_steps_100.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Stage 1 (100 inference steps) </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./images/part0/rocket_stage_2_steps_100.png" class="card-img-top" alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Stage 2 (100 inference steps) </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <p class="text-danger">
+                TO DO
+            </p>
+
+        </div>
+
+
+        <div class="1">
+
+            <h1 class="display-6"> Part 1: Sampling Loops </h1>
+            <p class="">
+                In this part of the project, I implemented sampling loops to produce high quality images using the
+                pretrained DeepFloyd denoisers.
+
+                Starting with a clean image \(x_0\) at time \(t = 0\), we can iteratively add noise to the image until
+                it resembles pure noise \(x_T\) at time \(t = T\).
+                For DeepFloyd IF, \(T = 1000\) by default, and the amount of noise added at each timestep is controlled
+                by noise coefficients \(\bar{\alpha}_t\).
+
+            <div class="mx-auto w-75">
+                <img src="./images/part1/diffusion_models_primer.png" class="img-fluid" alt="Responsive image">
+            </div>
+
+            The diffusion models attemps to reverse this process by denoising the image \(x_t\). This can by done by
+            training a model that predicts the noise in an image given the timestep \(t\) and the noisy image \(x_t\).
+            With such a model, we can either:
+            <ul>
+                <li> Remove all the noise from the image \(x_T\) to get the original image \(x_0\) -- <a
+                        href="#section_1_3" class="section-link"><span class="text-primary">One Step
+                            Denoising</span></a> </li>
+                <li> Iteratively remove a portion of the noise at each timestep to get a cleaner denoised image
+                    \(x_{t-1}\) -- <a href="#section_1_4" class="section-link"><span class="text-primary">Iterative
+                            Denoising</span></a> </li>
+            </ul>
+
+            To sample images from the model, we can feed in a pure noise image \(x_T\) from a gaussian distribution
+            \(\sim \mathcal{N}(0, I)\) and follow the process above.
+
+            </p>
+
+            <div class="1_1">
+                <h1 class="display-6"> Part 1.1: Implementing the Forward Process </h1>
+                <p class="">
+                    The forward process describes the process of adding noise to a clean image \(x_0\) to get a noisy
+                    image \(x_t\) at timestep \(t\). This process is defined by:
+                    $$ q(x_t|x_0) = \mathcal{N}(x_t; \sqrt{\alpha_t}x_0, (1 - \alpha_t)I) \tag{1} $$
+                    Here, the noise is sampled from a Gaussian distribution with mean \(\sqrt{\alpha_t}x_0\) and
+                    variance \((1 - \alpha_t)I\).
+
+                    We can rewrite this as:
+                    $$ x_t = \sqrt{\bar{\alpha}_t} \cdot x_0 + \sqrt{1 - \bar{\alpha}_t} \cdot \epsilon \text{ where }
+                    \epsilon \sim \mathcal{N}(0, I) \tag{2} $$
+
+                    The forward process is implemented in the function <code>forward</code>.
+                    This function takes in an image \(x_0\) and a timestep \(t\), and returns the noisy image \(x_t\).
+
+                </p>
+
+                <h5> Results </h5>
+                <p> Here are some examples of the forward process for different timesteps: </p>
+
+                <h6>
+                    <p class="text-primary-emphasis">Figure 4: Forward Process for Berkeley Campanile Image </p>
+                </h6>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Berkeley Campanile (\(t = 0\)) </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile_noise_250.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Noisy Campanile (\(t = 250\)) </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile_noise_500.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Noisy Campanile (\(t = 500\)) </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile_noise_750.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Noisy Campanile (\(t = 750\)) </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-danger">
+                    TO DO
+                </p>
+
+            </div>
+
+            <div class="1_2">
+                <h1 class="display-6"> Part 1.2: Classical Denoising </h1>
+                <p class="">
+                    One naive way to denoise an image is to use classical methods such as Gaussian blurring which acts
+                    as a low-pass filter.
+                    This can be done by convolving the image with a Gaussian kernel.
+
+                    Using a kernel size of 15x15 and a standard deviation recommended by PyTorch's
+                    <code>gaussian_blur</code> function, I attempted to denoise the noisy images from the previous
+                    section.
+                    The results are shown below:
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis">Figure 5: Classical Denoising for Berkeley Campanile Image </p>
+                </h6>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile.png" class="card-img-top" alt="Image 1">
+
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Berkeley Campanile (\(t = 0\)) </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile_classical_denoise_250.png" class="card-img-top"
+                                    alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Blurred Campanile (\(t = 250\)) </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile_classical_denoise_500.png" class="card-img-top"
+                                    alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Blurred Campanile (\(t = 500\)) </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile_classical_denoise_750.png" class="card-img-top"
+                                    alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Blurred Campanile (\(t = 750\)) </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+                <p class="text-danger">
+                    TO DO
+                </p>
+
+            </div>
+
+            <div class="1_3" id="section_1_3">
+                <h1 class="display-6"> Part 1.3: One Step Denoising </h1>
+                <p class="">
+                    Now, we can use the pretrained DeepFloyd denoiser to denoise the noisy images. The denoiser is a
+                    UNet architecture that can be accessed at <code>stage_1.unet</code>. This UNet has already been
+                    trained on a large dataset of \( (x_t, t) \) pairs of images, and can be used to recover the
+                    Gaussian noise in an image.
+                    Something to keep in mind is that the diffusion model expects a text prompt embedding. We end up
+                    using a placeholder prompt "a high quality photo" for this part of the project.
+
+                    Rearranging the forward process equation (2), we can solve for \(x_0\) with the noise estimate
+                    \(\epsilon\) given by the denoiser UNet:
+                    $$ x_0 = \frac{x_t - \sqrt{1 - \bar{\alpha}_t} \cdot \epsilon}{\sqrt{\bar{\alpha}_t}} \tag{3} $$
+
+                    The results are shown below:
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis">Figure 6: One Step Denoising for Berkeley Campanile Image </p>
+                </h6>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Berkeley Campanile (\(t = 0\)) </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile_one_step_denoise_250.png" class="card-img-top"
+                                    alt="Image 1">
+
+                                <div class="card-body text-center">
+                                    <p class="card-text"> One Step Denoised (\(t = 250\)) </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile_one_step_denoise_500.png" class="card-img-top"
+                                    alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> One Step Denoised (\(t = 500\)) </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile_one_step_denoise_750.png" class="card-img-top"
+                                    alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> One Step Denoised (\(t = 750\)) </p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <p class="text-danger">
+                    TO DO
+                </p>
+
+            </div>
+
+            <div class="1_4" id="section_1_4">
+                <h1 class="display-6"> Part 1.4: Iterative Denoising </h1>
+                <p class="">
+                    Looking at the results from the previous section, we can see that the denoising is much better than
+                    the classical denoising, but still not very good. This is because diffusion models are designed to
+                    denoise images iteratively, and not just in one step.
+                    To fix this, we could start with a noisy image (\(x_t\)) for \(t = 1000\) and iteratively denoise
+                    one step at a time until we get to \(t = 0\). However, this is computationally expensive and not
+                    very efficient.
+
+                    Instead, we can skip some steps and use strided timesteps instead. For this project, we use a stride
+                    of 30. Starting from \(t = 990\), we can denoise the image for \(t = 960, 930, 900, \ldots, 0\).
+                    On the ith denoising step, we have an image \(x_t\) at the timestep
+                    <code>strided_timesteps[i]</code>. After one denoising step, we get a slightly cleaner image
+                    \(x_{t'}\) (where \(t' < t\)) using the formula: $$ x_{t'}=\frac{\sqrt{\bar{\alpha_{t'}}} \cdot
+                        \beta_{t'}}{1 - \bar{\alpha_t}} x_0 + \frac{\sqrt{\alpha_t} (1 - \bar{\alpha_{t'}})}{1 -
+                        \bar{\alpha_t}} x_t + v_\sigma \tag{4} $$ <ul>
+                        <li> \(x_0\) is our current estimate of the clean image from performing one-step denoising </li>
+                        <li> \(x_t\) is our noisy image at timestep \(t\) </li>
+                        <li> \(x_{t'}\) is our noisy image at timestep \(t'\) such that \(t' < t\) </li>
+                        <li> \( \alpha_t = \frac{\bar{\alpha_{t'}}}{\bar{\alpha_t}} \) </li>
+                        <li> \(\beta_{t} = 1 - \alpha_t \) </li>
+                        <li> \(v_\sigma\) is the noise estimate from the DeepFloyd denoiser UNet </li>
+                        </ul>
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis">Figure 7: Iterative Denoising for Berkeley Campanile Image </p>
+                </h6>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/noisy_690.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Noisy \(t = 690\) </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/noisy_540.png" class="card-img-top" alt="Image 1">
+
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Noisy \(t = 540\) </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/noisy_390.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Noisy \(t = 390\) </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/noisy_240.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Noisy \(t = 240\) </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/noisy_90.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Noisy \(t = 90\) </p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Berkeley Campanile </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile_iterative_denoise.png" class="card-img-top"
+                                    alt="Image 1">
+
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Iteratively Denoised </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile_one_step_denoise.png" class="card-img-top"
+                                    alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> One Step Denoised </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/campanile_classical_denoise.png" class="card-img-top"
+                                    alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Gaussian Denoised </p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <p class="text-danger">
+                    TO DO
+                </p>
+
+            </div>
+
+            <div class="1_5" id="section_1_5">
+                <h1 class="display-6"> Part 1.5: Diffusion Model Sampling </h1>
+                <p class="">
+
+                    Now that we have a function that performs iterative denoising, we can use it to generate images.
+                    Instead of passing in a noisy image of a certain photo, we can start with pure noise and iteratively
+                    denoise it to generate images from scratch. Passing in the prompt "a high quality photo", I got
+                    these results:
+                </p>
+                <h6>
+                    <p class="text-primary-emphasis">Figure 8: Diffusion Model Sampling using the prompt "a high quality
+                        photo" </p>
+                </h6>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/high_quality_1.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> High Quality Photo 1 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/high_quality_2.png" class="card-img-top" alt="Image 1">
+
+                                <div class="card-body text-center">
+                                    <p class="card-text"> High Quality Photo 2 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/high_quality_3.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> High Quality Photo 3 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/high_quality_4.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> High Quality Photo 4 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/high_quality_5.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> High Quality Photo 5 </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <p class="text-danger">
+                    TO DO
+                </p>
+
+            </div>
+
+            <div class="1_6" id="section_1_6">
+                <h1 class="display-6"> Part 1.6: Classifier-Free Guidance </h1>
+                <p class="">
+
+                    Notice that some of the generated images from the previous part are not very good. To improve image
+                    quality (at the expense of image diversity), we can use a technique called Classifier-Free Guidance
+                    (CFG).
+                    CFG works by calculating two different noise estimates:
+                <ul>
+                    <li> \( \epsilon_{c} \) is the noise estimate conditioned on a text prompt such as "a high quality
+                        photo" </li>
+                    <li> \( \epsilon_{u} \) is the unconditional noise estimate </li>
+                </ul>
+
+                The final noise estimate is then calculated as:
+                $$ \epsilon = \epsilon_{u} + \gamma \cdot (\epsilon_{c} - \epsilon_{u}) \tag{5} $$ where \(\gamma\) is a
+                hyperparameter that controls the strength of the guidance.
+                When \(\gamma = 0\), we get an unconditional noise estimate, and when \(\gamma = 1\), we get a
+                conditional noise estimate. However, when \(\gamma > 1\), the quality of the image drastically improves.
+
+                I used the same prompt "a high quality photo" as before, but with a higher \(\gamma\) value of 7. The
+                results are shown below:
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis">Figure 9: Diffusion Model Sampling with CFG </p>
+                </h6>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/cfg_1.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> CFG Sample 1 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/cfg_2.png" class="card-img-top" alt="Image 1">
+
+                                <div class="card-body text-center">
+                                    <p class="card-text"> CFG Sample 2 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/cfg_3.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> CFG Sample 3 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/cfg_4.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> CFG Sample 4 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/cfg_5.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> CFG Sample 5 </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <p class="text-danger">
+                    TO DO
+                </p>
+
+
+            </div>
+
+            <div class="1_7" id="section_1_7">
+                <h1 class="display-6"> Part 1.7: Image-to-Image Translation </h1>
+                <p class="">
+                    By taking a real image, adding noise to it, and then denoising it, we end up with an editted image
+                    that resembles the original image. The more noise we add, the "larger" the edits will appear.
+                    We test this SDEdit algorithm with different levels of noise -- Here are some examples of running
+                    the iterative denoising function (with CFG) on varying levels of noise applied to test images;
+                    specifically, we use strided timesteps \(i_\text{start} \in \{1, 3, 5, 7, 10, 20\}\):
+                </p>
+                <h6>
+                    <p class="text-primary-emphasis">Figure 10: SDEdit on Berkeley Campanile </p>
+                </h6>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_1.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[1]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_2.png" class="card-img-top" alt="Image 1">
+
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[3]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_3.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[5]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_4.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[7]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_5.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[10]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_6.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[20]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <p class="text-danger">
+                    TO DO
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis">Figure 11: SDEdit on ... </p>
+                </h6>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_1.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[1]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_2.png" class="card-img-top" alt="Image 1">
+
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[3]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_3.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[5]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_4.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[7]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_5.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[10]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_6.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[20]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <p class="text-danger">
+                    TO DO
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis">Figure 12: SDEdit on ... </p>
+                </h6>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_1.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[1]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_2.png" class="card-img-top" alt="Image 1">
+
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[3]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_3.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[5]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_4.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[7]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_5.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[10]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/campanile_SDEdit_6.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[20]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <p class="text-danger">
+                    TO DO
+                </p>
+
+                <h4 class=""> Part 1.7.1: Editing Hand Drawn and Web Images </h4>
+                <p class="">
+                    The SDEdit algorithm works particularly well with non-realistic image, such as drawings, and
+                    projecting it onto the natural image manifold. Below are some examples of this algorithm with
+                    nonrealistic images.
+                </p>
+                <h6>
+                    <p class="text-primary-emphasis">Figure 13: SDEdit ... </p>
+                </h6>
+
+                <p class="text-danger">
+                    TO DO
+                </p>
+
+                <h4 class=""> Part 1.7.2: Inpainting </h4>
+                <div id="section_1_7_2">
+                    <p class="">
+                        Following the <a href="https://arxiv.org/pdf/2201.09865">RePaint</a> paper, we can also use the
+                        iterative denoising algorithm to inpaint images.
+                        Given an image \( x_\text{original} \) and a binary mask \( m \), we can create a new image that
+                        has
+                        new content in the masked region while preserving the rest of the image.
+
+                        After every iteration of the denoising process, we force the resulting image \( x_t \) to have
+                        the
+                        same pixels as the original image \( x_\text{original} \) where \( m \) is 0.
+                        $$ x_t \leftarrow m x_t + (1 - m) \text{forward}(x_\text{original}, t)$$
+
+                        This ensures that we leave everything inside the edit mask alone, but we replace everything
+                        outside
+                        the edit mask with our original image -- with the correct amount of noise added for timestep \(
+                        t
+                        \).
+
+                        Below are some examples of the inpainting results:
+
+
+                    </p>
+
+                    <h6>
+                        <p class="text-primary-emphasis">Figure 14: Impainting Campanile </p>
+                    </h6>
+
+                    <div class="container grid-container">
+
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/campanile_image.png" class="card-img-top"
+                                        alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> Berkeley Campanile </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/campanile_mask.png" class="card-img-top" alt="Image 1">
+
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> Binary Mask </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/campanile_to_replace.png" class="card-img-top"
+                                        alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> Image to Replace </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/campanile_inpaint.png" class="card-img-top"
+                                        alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> Inpainted Image </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-danger">
+                        TO DO
+                    </p>
+
+                    <h6>
+                        <p class="text-primary-emphasis">Figure 14: Impainting ... </p>
+                    </h6>
+
+                    <div class="container grid-container">
+
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> Binary Mask </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> Image to Replace </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> Inpainted Image </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-danger">
+                        TO DO
+                    </p>
+
+                    <h6>
+                        <p class="text-primary-emphasis">Figure 14: Impainting ... </p>
+                    </h6>
+
+                    <div class="container grid-container">
+
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> Binary Mask </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> Image to Replace </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> Inpainted Image </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-danger">
+                        TO DO
+                    </p>
+
+                    <h4 class=""> Part 1.7.3: Text-Conditioned Image-to-image Translation </h4>
+                    <p class="">
+                        Up until now, we were using the prompt: "a high quality photo". Now, we will do the same thing
+                        as
+                        the previous section, but guide the projection with language by using more specific custom text
+                        prompts.
+                        Once again, we can vary the amount of noise we add to the image to control the amount of editing
+                        we
+                        do. Here we use the same timesteps as before: \(i_\text{start} \in \{1, 3, 5, 7, 10, 20\}\).
+                        Below are some examples of the text-conditioned image-to-image translation results:
+                    </p>
+
+                    <h6>
+                        <p class="text-primary-emphasis">Figure : Campanile as "a rocket ship" </p>
+                    </h6>
+
+                    <div class="container grid-container">
+
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/campanile.png" class="card-img-top" alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> Berkeley Campanile </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/campanile_rocket_1.png" class="card-img-top"
+                                        alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> <code>strided_timesteps[1]</code> </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/campanile_rocket_2.png" class="card-img-top"
+                                        alt="Image 1">
+
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> <code>strided_timesteps[3]</code> </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/campanile_rocket_3.png" class="card-img-top"
+                                        alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> <code>strided_timesteps[5]</code> </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/campanile_rocket_4.png" class="card-img-top"
+                                        alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> <code>strided_timesteps[7]</code> </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/campanile_rocket_5.png" class="card-img-top"
+                                        alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> <code>strided_timesteps[10]</code> </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <img src="./images/part1/1.7/campanile_rocket_6.png" class="card-img-top"
+                                        alt="Image 1">
+                                    <div class="card-body text-center">
+                                        <p class="card-text"> <code>strided_timesteps[20]</code> </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-danger">
+                        TO DO
+                    </p>
+
+
+                </div>
+
+                <div class="1_8" id="section_1_8">
+                    <h1 class="display-6" id="section_1_8"> Part 1.8: Visual Anagrams </h1>
+                    <p class="">
+                        Another interesting application of the diffusion model is to generate visual anagrams. Following
+                        the
+                        implementation of <a href="https://dangeng.github.io/visual_anagrams/">Visual Anagrams</a>, we
+                        can
+                        create image that has two different meanings when flipped upside down.
+                        To do this, at each iteration of the denoising process we calculate a noise estimate for two
+                        different prompts (one for the right side up image and one for the flipped image). Then we
+                        average
+                        the two noise estimates to get our final noise estimate that we use to denoise the image.
+
+                        The full algorithm is shown below:
+
+                        $$ \epsilon_1 = \text{UNet}(x_t, t, p_1) $$
+                        $$ \epsilon_2 = \text{flip}(\text{UNet}(\text{flip}(x_t), t, p_2)) $$
+                        $$ \epsilon = (\epsilon_1 + \epsilon_2) / 2 $$
+
+                        Here, UNet is the same DeepFloyd diffusion model UNet from before, flip(⋅) is a function that
+                        flips
+                        the image, and \( p_1 \) and \( p_2 \) are two different text prompt embeddings.
+                        Below are some examples of the visual anagrams:
+
+
+                    </p>
+
+                    <h6>
+                        <p class="text-primary-emphasis">Figure .. </p>
+                    </h6>
+
+                    <div class="container grid-container">
+
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <div class="anagram-wrapper">
+                                        <img src="./images/part1/1.8/campfire.png" class="card-img-top" alt="Image 1">
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="anagram-text-original">An oil painting of people around a campfire</p>
+                                        <p class="anagram-text-flipped">An oil painting of an old man</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <div class="anagram-wrapper">
+                                        <img src="./images/part1/1.8/oldman.png" class="card-img-top" alt="Image 1">
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="anagram-text-original">An oil painting of an old man</p>
+                                        <p class="anagram-text-flipped">An oil painting of people around a campfire</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-danger">
+                        TO DO
+                    </p>
+
+                    <h6>
+                        <p class="text-primary-emphasis">Figure .. </p>
+                    </h6>
+
+                    <div class="container grid-container">
+
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <div class="anagram-wrapper">
+                                        <img src="./images/part1/1.8/.png" class="card-img-top" alt="Image 1">
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="anagram-text-original"></p>
+                                        <p class="anagram-text-flipped"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <div class="anagram-wrapper">
+                                        <img src="./images/part1/1.8/.png" class="card-img-top" alt="Image 1">
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="anagram-text-original"></p>
+                                        <p class="anagram-text-flipped"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-danger">
+                        TO DO
+                    </p>
+
+                    <div class="container grid-container">
+
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <div class="anagram-wrapper">
+                                        <img src="./images/part1/1.8/.png" class="card-img-top" alt="Image 1">
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="anagram-text-original"></p>
+                                        <p class="anagram-text-flipped"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                                <div class="card">
+                                    <div class="anagram-wrapper">
+                                        <img src="./images/part1/1.8/.png" class="card-img-top" alt="Image 1">
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="anagram-text-original"></p>
+                                        <p class="anagram-text-flipped"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-danger">
+                        TO DO
+                    </p>
+
+                </div>
+
+
+                <div class="1_9" id="section_1_9">
+                    <h1 class="display-6" id="section_1_9"> Part 1.9: Hybrid Images </h1>
+                    <p class="">
+                        Another interesting application of the diffusion model is to generate hybrid images; these are
+                        images whose appearance can change depending on the distance (or size) at which they are viewed.
+                        Following the implementation of <a
+                            href="https://dangeng.github.io/factorized_diffusion/">Factorized
+                            Diffusion</a>, we can create an image that has a different appearance when viewed from
+                        different
+                        distances.
+                        To do this, at each iteration of the denoising process we calculate a noise estimate for two
+                        different prompts and combine the low frequencies from one noise estimate with high frequencies
+                        of
+                        the other.
+
+                        The full algorithm is shown below:
+
+                        $$ \epsilon_1 = \text{UNet}(x_t, t, p_1) $$
+                        $$ \epsilon_2 = \text{UNet}(x_t, t, p_2) $$
+                        $$ \epsilon = f_\text{lowpass}(\epsilon_1) + f_\text{highpass}(\epsilon_2) $$
+
+                        Here, UNet is the same DeepFloyd diffusion model UNet from before, \(f_\text{lowpass}\) and
+                        \(f_\text{highpass}\) are low-pass and high-pass filters respectively, and \(p_1\) and \(p_2\)
+                        are
+                        two different text prompt embeddings.
+                        Below are some examples of hybrid images that look different when viewed from far away versus up
+                        close:
+
+                    </p>
+                    <h6>
+                        <p class="text-primary-emphasis">Figure .. </p>
+                    </h6>
+
+                    <div class="container grid-container">
+
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                                <div class="card hybrid-card">
+                                    <div class="hybrid-image-container">
+                                        <img src="./images/part1/1.9/skull-waterfall.png" class="hybrid-image-small"
+                                            alt="Image 1">
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="hybrid-text-near">A lithograph of a skull</p>
+                                        <p class="hybrid-text-far">A lithograph of a waterfall</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                                <div class="card hybrid-card">
+                                    <div class="hybrid-image-container">
+                                        <img src="./images/part1/1.9/skull-waterfall.png" class="hybrid-image-large"
+                                            alt="Image 1">
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="hybrid-text-near">A lithograph of a waterfall</p>
+                                        <p class="hybrid-text-far">A lithograph of a skull</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-danger">
+                        TO DO
+                    </p>
+
+                    <h6>
+                        <p class="text-primary-emphasis">Figure .. </p>
+                    </h6>
+
+                    <div class="container grid-container">
+
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                                <div class="card hybrid-card">
+                                    <div class="hybrid-image-container">
+                                        <img src="./images/part1/1.9/.png" class="hybrid-image-small" alt="Image 1">
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="hybrid-text-near"></p>
+                                        <p class="hybrid-text-far"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                                <div class="card hybrid-card">
+                                    <div class="hybrid-image-container">
+                                        <img src="./images/part1/1.9/.png" class="hybrid-image-large" alt="Image 1">
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="hybrid-text-near"></p>
+                                        <p class="hybrid-text-far"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-danger">
+                        TO DO
+                    </p>
+
+                    <h6>
+                        <p class="text-primary-emphasis">Figure .. </p>
+                    </h6>
+
+                    <div class="container grid-container">
+
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                                <div class="card hybrid-card">
+                                    <div class="hybrid-image-container">
+                                        <img src="./images/part1/1.9/.png" class="hybrid-image-small" alt="Image 1">
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="hybrid-text-near"></p>
+                                        <p class="hybrid-text-far"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                                <div class="card hybrid-card">
+                                    <div class="hybrid-image-container">
+                                        <img src="./images/part1/1.9/.png" class="hybrid-image-large" alt="Image 1">
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="hybrid-text-near"></p>
+                                        <p class="hybrid-text-far"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-danger">
+                        TO DO
+                    </p>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="project-overview" id="neural-style-transfer">
+                <h1 class="display-5"> Diffusion Models From Scratch </h1>
+                <p class="lead">
+                    In the second part of this project, I implemented a diffusion model from scratch following the DDPM
+                    paper. I built a time-conditioned UNet architecture in PyTorch that learns to denoise images by
+                    predicting the noise added during the forward process. The model was trained on the MNIST dataset to
+                    generate handwritten digits conditioned on their class labels. This involved implementing both the
+                    forward process (gradually adding noise to images) and the reverse process (iteratively denoising to
+                    generate new images).
+                </p>
+
+            </div>
+
+            <div class="1_1">
+                <h1 class="display-6"> Part 1: Training a Single-Step Denoising UNet</h1>
+                <p class="">
+                    The first step in this project is building a simple one-step denoiser. Given a noisy image \( z \),
+                    we train a denoiser \( D_\theta \) such that it maps \( z \) to a clean image \( x \).
+                    Using the L2 loss funciton, we can train the denoiser to minimize the following objective:
+
+                    $$ L = \mathbb{E}_{z, x} || D_\theta(z) - x ||^2 $$
+                </p>
+
+                <hr>
+                <br>
+
+                <div class="mx-auto w-75">
+                    <img src="./images/unet/unconditional_unet.png" class="img-fluid" alt="Responsive image">
+                </div>
+                <br>
+
+                <p>
+                    The pretrained VGG-Network contains two different <code>Sequential</code> PyTorch implementations:
+                    features (containing the convolution and pooling layers), and classifier (containing fully connected
+                    layers). Since we we need the output of the individual convolution layers to measure the content and
+                    style loss, we use the features module!
+
+                    To extract the content and style representations from the CNN, the authors recommends using the
+                    feature
+                    output of convolutional layer 4_2 to learn the "content" of the image, while using output of layers
+                    1_1,
+                    2_1, 3_1, 4_1, and 5_1 to learn the "style" of the image.
+                    Since I only need the outputs from these 6 convolutional layers, I modified the
+                    <code>forward()</code>
+                    function of my VGG model to return only those responses.
+                </p>
+
+                <p>
+                    The initial and modified network architecture after renaming layers and changing the max-pooling
+                    operations to avg-pooling is shown below:
+                </p>
+
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./neuralStyleTransfer/images/initial_model.png" class="card-img-top"
+                                alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Pretrained Architecture </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                        <div class="card">
+                            <img src="./neuralStyleTransfer/images/modified_model.png" class="card-img-top"
+                                alt="Image 1">
+                            <div class="card-body text-center">
+                                <p class="card-text"> Modified VGG-19 Architecture </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                </p>
+            </div>
+
+            <div class="1_1">
+                <h1 class="display-6"> Part 2: Defining Loss Functions </h1>
+                <p class="lead">
+                    Since the paper separates the content and style representations of images, we have two loss
+                    functions
+                    that we use when training the modified VGG-19 network.
+                    In other words, the loss function that we aim to minimize contains two terms: one for content and
+                    another for style!
+                </p>
+            </div>
+
+            <hr>
+            <p>
+
+            </p>
+            <h5> Content Loss </h5>
+
+            <p>
+                The authors of the paper realized that using the feature representation at convolution layer 4_2 was the
+                most effective in representing the content of the image.
+                However, this is a parameter that can be tuned to get different results since higher layers in the
+                network
+                capture the high-level content of an image while lower layers reproduce exact pixel values of the
+                original
+                image.
+            </p>
+
+            <p>
+                To calculate the content loss of the content image with respect to the image we are generating, we use
+                the
+                outputs of convolutional layer 4_2 in the equation below:
+            </p>
+
+
+            <div class="mx-auto">
+                <img src="./neuralStyleTransfer/images/content_loss.jpg" alt="Responsive image">
+            </div>
+
+
+            <p>
+                Here, the content loss is simply the Mean Squared Error (MSE) between \( F \) (the 4_2 feature map of
+                the
+                generated image) - and \( P \) (the 4_2 feature map of the content image)
+            </p>
+
+            <h5> Style Loss </h5>
+
+            <p>
+                Calculating the style loss is not as simple as the content loss. To capture the "style" of an image, we
+                first build a style representation from the feature maps that calculated the correlations between the
+                different feature responses. This is done by calculating the Gram Matrix - the inner product between the
+                vectorized feature maps.
+            </p>
+
+            <div class="mx-auto">
+                <img src="./neuralStyleTransfer/images/gram_matrix.jpg" alt="Responsive image">
+            </div>
+
+            <p>
+                After computing the Gram matricies for each vectorized feature map, we cstart by minimizing the
+                mean-squared
+                distance between the entries of the Gram matrix from the original image and the Gram matrix of the image
+                to
+                be generated. For a given layer l, the contribution of that layer to the style loss is defined as:
+            </p>
+
+            <div class="w-75">
+                <img src="./neuralStyleTransfer/images/style_error.jpg" class="img-fluid" alt="Responsive image">
+            </div>
+
+            <p>
+                By aggregating this error across all the convolutional layers, we get the total style loss which is
+                equal
+                to:
+            </p>
+
+            <div class="w-75">
+                <img src="./neuralStyleTransfer/images/style_loss.jpg" class="img-fluid" alt="Responsive image">
+            </div>
+
+            <p>
+                In the equation above, \( w_{l} \) represents the weight of the contribution of each layer to the total
+                loss. For this implementation, I set \( w_{l} = 1/5 \) for convolutional layers 1_1, 2_1, 3_1, 4_1, and
+                5_1.
+                For any other layers, \( w_{l} = 0\)
+            </p>
+
+            <h5> Total Loss </h5>
+            <p>
+                Combining the Style Loss with the Content Loss, the total loss we minimize is:
+                $$
+                \LARGE{
+                L_{total} (\vec{p}^{\,}, \vec{a}^{\,}, \vec{x}^{\,}) = \alpha * L_{content}(\vec{p}^{\,}, \vec{x}^{\,})
+                +
+                \beta * L_{style}(\vec{a}^{\,}, \vec{x}^{\,})
+                }
+                $$
+            </p>
+            <p>
+                Here, \(\alpha\) and \(\beta\) are parameters that control the weighting factors for content (\( \alpha
+                \))
+                and style (\( \beta \)).
+            </p>
+
+            <div class="1_1">
+                <h1 class="display-6"> Part 3: Training & Results </h1>
+                <p class="">
+                    To train this model and optimize the loss function, it is important to performing some preprocessing
+                    steps to get the best results.
+                </p>
+                <p>
+                    Firstly, we need to resize the images to the appropriate size; since I have access to Google Colab's
+                    GPU
+                    compute power, I resized the content and style images to 512 by 512 pixels.
+                    Additionally, we have to convert this resized image of shape (height, width, channel size) into
+                    (batch
+                    size, channel size, height, width) so that our images are compatible with the VGG-19 architecture!
+                    When downloading the pretrained model, it is also important to set the network to evaluation mode
+                    using
+                    <code>.eval()</code> since some of the model's layers have different behavior during training vs
+                    evaluation.
+                </p>
+            </div>
+
+            <hr>
+            <h5> Training </h5>
+
+            <p>
+                For training, I decided to use the Adam optimizer initialized with a learning rate of 0.004 - the paper
+                did
+                not specify what optimizer to use but using the Adam optimizer turned out fine.
+                The paper also mentions that the ratio \(\alpha / \beta \) was either \( 1 * 10^{-3} \text{ or } 1 *
+                10^{-4}\). Therefore, I started off by setting \( \alpha = 1 \) and \( \beta = 1000 \).
+                In the paper, the authors initialize a randomized white-noise image to be the image that is getting
+                optimized. However, I got better results by initializing the image-to-be-generated with a copy of the
+                content image.
+            </p>
+
+            <p>
+                After only 300 training iterations (optimizer steps), I got the following results:
+            </p>
+
+            <h5> Results </h5>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./neuralStyleTransfer/images/content/dancing.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Content </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./neuralStyleTransfer/images/style/picasso.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Style </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./neuralStyleTransfer/images/results/dancing_picasso.jpg" class="card-img-top"
+                            alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Output </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p>
+                Content Image of a Balerina in the style of <i>Femme nue assise</i> by Pablo Picasso! The content image
+                was
+                taken from <a href="https://pytorch.org/tutorials/advanced/neural_style_tutorial.html">this</a> PyTorch
+                resource. The results turned out pretty good but we lose many of the high frequency details of the
+                ballerina. I tried fine-tuning different parameters such as the number of style layers and the \(\alpha
+                \text{ and } \beta \) values but it did not make much improvement!
+            </p>
+
+            <hr>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./neuralStyleTransfer/images/content/berkeley.jpeg" class="card-img-top"
+                            alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Content </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./neuralStyleTransfer/images/style/starry_night.jpg" class="card-img-top"
+                            alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Style </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./neuralStyleTransfer/images/results/berkeley_starry_night.jpg" class="card-img-top"
+                            alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Output </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <p>
+                This result blends a photo of Berkeley that I took with the style of <i>The Starry Night</i> by Vincent
+                van
+                Gogh!
+            </p>
+
+
+
+            <hr>
+
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./neuralStyleTransfer/images/content/dc.jpeg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Content </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./neuralStyleTransfer/images/style/scream.jpg" class="card-img-top" alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Style </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card">
+                        <img src="./neuralStyleTransfer/images/results/dc_scream.jpg" class="card-img-top"
+                            alt="Image 1">
+                        <div class="card-body text-center">
+                            <p class="card-text"> Output </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p>
+                This final result combines a photo that I took of Vishali with the style of <i>Der Schrei</i> by Edvard
+                Munch. Similar to the first example, many smaller details of the face & body are lost as a result of
+                this
+                style transfer. In my notebook, I tried varying some of the parameters and I even set the \(
+                \alpha:\beta \)
+                ratio to \(1 * 10^{-2}\) but it didn't make a big difference!
+            </p>
+
+
+            <div class="project-insight">
+                <h1 class="display-6"> Neural Style Transfer Insights </h1>
+                <p class="lead">
+                    I enjoyed learning how to re-implement the paper <a href="https://arxiv.org/pdf/1508.06576.pdf">
+                        <i>A
+                            Neural Algorithm of Artistic Style</i> </a> from scratch! It was a very valuable experience
+                    having to dissect the paper and take in all of the information provided by the authors. Implementing
+                    this project was also fun since I had the chance to use some of my own images!
+                </p>
+            </div>
+
+        </div>
+
+</body>
+
+</html>
