@@ -10,10 +10,54 @@
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+        </script>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link href="style.css" rel="stylesheet">
+
+    <style>
+        .card {
+            position: relative;
+            overflow: hidden;
+        }
+        .card-img-top {
+            transition: opacity 0.3s ease;
+        }
+        .card-img-top.gif {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        /* Only apply hover effect to cards with the 'hover-gif' class */
+        .card.hover-gif:hover .card-img-top:not(.gif) {
+            opacity: 0;
+        }
+        .card.hover-gif:hover .card-img-top.gif {
+            opacity: 1;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hoverGifCards = document.querySelectorAll('.card.hover-gif');
+            
+            hoverGifCards.forEach(card => {
+                const gif = card.querySelector('.card-img-top.gif');
+                
+                card.addEventListener('mouseenter', function() {
+                    // Reset the GIF by reloading it
+                    const gifSrc = gif.src;
+                    gif.src = '';
+                    gif.src = gifSrc;
+                });
+            });
+        });
+    </script>
 
 </head>
 
@@ -1538,7 +1582,8 @@
             <h1 class="display-6"> Part 2: Training a Single-Step Denoising UNet </h1>
 
             <p class="">
-                For this project, we use the MNIST dataset which consists of 28x28 pixel black and white images of digits.
+                For this project, we use the MNIST dataset which consists of 28x28 pixel black and white images of
+                digits.
                 The first step in this project is building a simple one-step denoiser. Given a noisy image \( z \),
                 we train a denoiser \( D_\theta \) such that it maps \( z \) to a clean image \( x \).
                 Using the L2 loss funciton, we can train the denoiser to minimize the following objective:
@@ -1553,7 +1598,7 @@
             <div class="2_1" id="section_2_1">
 
                 <h1 class="display-6"> Part 2.1: Implementing the UNet Architecture </h1>
-                
+
                 <p>
                     The architecture I used for this project is a simple UNet that takes in a noisy version of an image
                     and attempts to denoise it.
@@ -1563,7 +1608,7 @@
                     <p class="text-primary-emphasis">Figure : Unconditional UNet Architecture </p>
                 </h6>
 
-                <div class="mx-auto w-75">
+                <div class="mx-auto w-75 p-3 border rounded border-2 border-primary-emphasis">
                     <img src="./images/unet/unconditional_unet.png" class="img-fluid" alt="Responsive image">
                 </div>
 
@@ -1583,7 +1628,7 @@
                     <p class="text-primary-emphasis">Figure : Standard UNet Operations </p>
                 </h6>
 
-                <div class="mx-auto w-75">
+                <div class="mx-auto w-75 p-3 border rounded border-2 border-primary-emphasis">
                     <img src="./images/unet/unet_operations.png" class="img-fluid" alt="Responsive image">
                 </div>
 
@@ -1591,10 +1636,12 @@
 
                 <p>
                 <ul>
-                    <li>Conv2d(kernel_size, stride, padding) is <code>nn.Conv2d(kernel_size, stride, padding)</code></li>
+                    <li>Conv2d(kernel_size, stride, padding) is <code>nn.Conv2d(kernel_size, stride, padding)</code>
+                    </li>
                     <li>BN is <code>nn.BatchNorm2d()</code></li>
                     <li>GELU is <code>nn.GELU()</code></li>
-                    <li>ConvTranspose2d(kernel_size, stride, padding) is <code>nn.ConvTranspose2d(kernel_size, stride, padding)</code>
+                    <li>ConvTranspose2d(kernel_size, stride, padding) is
+                        <code>nn.ConvTranspose2d(kernel_size, stride, padding)</code>
                     </li>
                     <li>AvgPool(kernel_size) is <code>nn.AvgPool2d(kernel_size)</code></li>
                     <li>D is the number of hidden channels and is a hyperparameter that we will set ourselves.</li>
@@ -1606,17 +1653,36 @@
             <div class="2_2" id="section_2_2">
                 <h1 class="display-6"> Part 2.2: Using the UNet to Train a Denoiser </h1>
                 <p class="">
-                    To train the UNet, we need to generate a dataset of noisy images and their corresponding clean images \( (z, x) \) where each \( x \) is a clean MNIST digit. 
-                    We can generate \( z \) by adding noise to \( x \) using the the following noising equation: 
+                    To train the UNet, we need to generate a dataset of noisy images and their corresponding clean
+                    images \( (z, x) \) where each \( x \) is a clean MNIST digit.
+                    We can generate \( z \) by adding noise to \( x \) using the the following noising equation:
                     $$ z = x + \sigma \epsilon \text{ where } \epsilon \sim \mathcal{N}(0, I) $$
                     where \( \epsilon \) is a noise term sampled from a normal distribution.
 
-                    Below visualizes the noising process for different values of \( \sigma \in \{0, 0.2, 0.4, 0.6, 0.8, 1.0\} \):
+                    Below visualizes the noising process for different values of \( \sigma \in \{0, 0.2, 0.4, 0.6, 0.8,
+                    1.0\} \):
                 </p>
 
                 <h6>
                     <p class="text-primary-emphasis"> Figure : Noising Process on MNIST Digits </p>
                 </h6>
+
+                <style>
+                    .noising-card {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 0.5rem;
+                        height: 100%;
+                    }
+
+                    .noising-card img {
+                        max-width: 100%;
+                        height: auto;
+                        object-fit: contain;
+                    }
+                </style>
 
                 <div class="container grid-container border rounded border-2 border-primary-emphasis">
                     <div class="row align-items-center justify-content-center">
@@ -1630,11 +1696,11 @@
                                 <div class="col-2"><strong>\( \sigma = 1.0 \)</strong></div>
                             </div>
                         </div>
-                        
+
                         <!-- Digit 2 -->
                         <div class="row align-items-center justify-content-center mb-4">
                             <div class="col-2">
-                                <div class="card">
+                                <div class="card noising-card">
                                     <img src="./images/unet/noising/2_0.png" class="card-img-top" alt="Digit 2, σ=0.0">
                                     <div class="card-body text-center p-1">
                                         <small class="text-muted">Digit 2</small>
@@ -1642,27 +1708,31 @@
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
-                                    <img src="./images/unet/noising/2_0_2.png" class="card-img-top" alt="Digit 2, σ=0.2">
+                                <div class="card noising-card">
+                                    <img src="./images/unet/noising/2_0_2.png" class="card-img-top"
+                                        alt="Digit 2, σ=0.2">
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
-                                    <img src="./images/unet/noising/2_0_4.png" class="card-img-top" alt="Digit 2, σ=0.4">
+                                <div class="card noising-card">
+                                    <img src="./images/unet/noising/2_0_4.png" class="card-img-top"
+                                        alt="Digit 2, σ=0.4">
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
-                                    <img src="./images/unet/noising/2_0_6.png" class="card-img-top" alt="Digit 2, σ=0.6">
+                                <div class="card noising-card">
+                                    <img src="./images/unet/noising/2_0_6.png" class="card-img-top"
+                                        alt="Digit 2, σ=0.6">
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
-                                    <img src="./images/unet/noising/2_0_8.png" class="card-img-top" alt="Digit 2, σ=0.8">
+                                <div class="card noising-card">
+                                    <img src="./images/unet/noising/2_0_8.png" class="card-img-top"
+                                        alt="Digit 2, σ=0.8">
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
+                                <div class="card noising-card">
                                     <img src="./images/unet/noising/2_1.png" class="card-img-top" alt="Digit 2, σ=1.0">
                                 </div>
                             </div>
@@ -1671,7 +1741,7 @@
                         <!-- Digit 3 -->
                         <div class="row align-items-center justify-content-center mb-4">
                             <div class="col-2">
-                                <div class="card">
+                                <div class="card noising-card">
                                     <img src="./images/unet/noising/3_0.png" class="card-img-top" alt="Digit 3, σ=0.0">
                                     <div class="card-body text-center p-1">
                                         <small class="text-muted">Digit 3</small>
@@ -1679,27 +1749,31 @@
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
-                                    <img src="./images/unet/noising/3_0_2.png" class="card-img-top" alt="Digit 3, σ=0.2">
+                                <div class="card noising-card">
+                                    <img src="./images/unet/noising/3_0_2.png" class="card-img-top"
+                                        alt="Digit 3, σ=0.2">
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
-                                    <img src="./images/unet/noising/3_0_4.png" class="card-img-top" alt="Digit 3, σ=0.4">
+                                <div class="card noising-card">
+                                    <img src="./images/unet/noising/3_0_4.png" class="card-img-top"
+                                        alt="Digit 3, σ=0.4">
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
-                                    <img src="./images/unet/noising/3_0_6.png" class="card-img-top" alt="Digit 3, σ=0.6">
+                                <div class="card noising-card">
+                                    <img src="./images/unet/noising/3_0_6.png" class="card-img-top"
+                                        alt="Digit 3, σ=0.6">
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
-                                    <img src="./images/unet/noising/3_0_8.png" class="card-img-top" alt="Digit 3, σ=0.8">
+                                <div class="card noising-card">
+                                    <img src="./images/unet/noising/3_0_8.png" class="card-img-top"
+                                        alt="Digit 3, σ=0.8">
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
+                                <div class="card noising-card">
                                     <img src="./images/unet/noising/3_1.png" class="card-img-top" alt="Digit 3, σ=1.0">
                                 </div>
                             </div>
@@ -1708,7 +1782,7 @@
                         <!-- Digit 4 -->
                         <div class="row align-items-center justify-content-center mb-4">
                             <div class="col-2">
-                                <div class="card">
+                                <div class="card noising-card">
                                     <img src="./images/unet/noising/4_0.png" class="card-img-top" alt="Digit 4, σ=0.0">
                                     <div class="card-body text-center p-1">
                                         <small class="text-muted">Digit 4</small>
@@ -1716,27 +1790,31 @@
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
-                                    <img src="./images/unet/noising/4_0_2.png" class="card-img-top" alt="Digit 4, σ=0.2">
+                                <div class="card noising-card">
+                                    <img src="./images/unet/noising/4_0_2.png" class="card-img-top"
+                                        alt="Digit 4, σ=0.2">
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
-                                    <img src="./images/unet/noising/4_0_4.png" class="card-img-top" alt="Digit 4, σ=0.4">
+                                <div class="card noising-card">
+                                    <img src="./images/unet/noising/4_0_4.png" class="card-img-top"
+                                        alt="Digit 4, σ=0.4">
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
-                                    <img src="./images/unet/noising/4_0_6.png" class="card-img-top" alt="Digit 4, σ=0.6">
+                                <div class="card noising-card">
+                                    <img src="./images/unet/noising/4_0_6.png" class="card-img-top"
+                                        alt="Digit 4, σ=0.6">
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
-                                    <img src="./images/unet/noising/4_0_8.png" class="card-img-top" alt="Digit 4, σ=0.8">
+                                <div class="card noising-card">
+                                    <img src="./images/unet/noising/4_0_8.png" class="card-img-top"
+                                        alt="Digit 4, σ=0.8">
                                 </div>
                             </div>
                             <div class="col-2">
-                                <div class="card">
+                                <div class="card noising-card">
                                     <img src="./images/unet/noising/4_1.png" class="card-img-top" alt="Digit 4, σ=1.0">
                                 </div>
                             </div>
@@ -1747,30 +1825,633 @@
                 <br>
 
                 <p>
-                    From the visualization above, increasing the value of \( \sigma \) adds more Gaussian noise to the original MNIST digits. At \( \sigma = 0.0 \), we see the clean original digits. As \( \sigma \) increases, the digits become progressively more noisy, until at \( \sigma = 1.0 \) they resemple pure noise. 
-                    For creating our noisy training data, we use \( \sigma = 0.5\). This means that our model will only learn to denoise noisy data that was generated with \( \sigma = 0.5 \). Let's see how this denoising model performs and generalizes to other levels of noise.
+                    From the visualization above, increasing the value of \( \sigma \) adds more Gaussian noise to the
+                    original MNIST digits. At \( \sigma = 0.0 \), we see the clean original digits. As \( \sigma \)
+                    increases, the digits become progressively more noisy, until at \( \sigma = 1.0 \) they resemple
+                    pure noise.
+                </p>
 
-                    We initialize the UNet to use a hidden dimension \( D = 128 \) and train the model with the Adam optimizer and a learning rate of \( 1 x 10^{-4}\). We used a batch size of 128 for 5 epochs to get the L2 loss curve shown below:
+                <h4 class=""> Part 2.2.1: Training </h4>
+                <p>
+                    For creating our noisy training data, we use \( \sigma = 0.5\). This means that our model will only
+                    learn to denoise noisy data that was generated with \( \sigma = 0.5 \).
+                    We initialize the UNet to use a hidden dimension \( D = 128 \) and train the model with the Adam
+                    optimizer and a learning rate of \( 1 x 10^{-4}\). We used a batch size of 128 for 5 epochs to get
+                    the L2 loss curve shown below:
                 </p>
 
                 <h6>
                     <p class="text-primary-emphasis"> Figure : Denoising Model Performance on MNIST Digits </p>
                 </h6>
 
-                <div class="mx-auto w-75">
-                    <img src="./images/unet/unconditional_unet_training_loss.png" class="img-fluid" alt="Responsive image">
+                <div class="d-flex justify-content-center align-items-center ">
+                    <img src="./images/unet/unconditional_unet_training_loss.png"
+                        class="img-fluid training-plot p-3 border rounded border-2 border-primary-emphasis"
+                        alt="Training Loss Plot">
                 </div>
-                
+                <br>
 
+                Here are some results from the model after the first and fifth epoch:
+                <br> <br>
 
-                <p class="text-danger">
-                    TO DO
+                <h6>
+                    <p class="text-primary-emphasis"> Figure : Denoising Model Performance after first epoch </p>
+                </h6>
+
+                <div class="container grid-container">
+                    <!-- Column Headers -->
+                    <div class="col-12 text-center mb-3">
+                        <div class="row justify-content-center">
+                            <div class="col-2"><strong>Input</strong></div>
+                            <div class="col-2"><strong>Noisy (\( \sigma = 0.5 \))</strong></div>
+                            <div class="col-2"><strong>Output</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Digit 0 -->
+                    <div class="row align-items-center justify-content-center mb-4">
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/0.png" class="card-img-top" alt="Input Digit 0">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/0_noise.png" class="card-img-top" alt="Noisy Digit 0">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/0_epoch_1.png" class="card-img-top"
+                                    alt="Output Digit 0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Digit 5 -->
+                    <div class="row align-items-center justify-content-center mb-4">
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/5.png" class="card-img-top" alt="Input Digit 5">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/5_noise.png" class="card-img-top" alt="Noisy Digit 5">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/5_epoch_1.png" class="card-img-top"
+                                    alt="Output Digit 5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Digit 6 -->
+                    <div class="row align-items-center justify-content-center mb-4">
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/6.png" class="card-img-top" alt="Input Digit 6">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/6_noise.png" class="card-img-top" alt="Noisy Digit 6">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/6_epoch_1.png" class="card-img-top"
+                                    alt="Output Digit 6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <h6>
+                    <p class="text-primary-emphasis"> Figure : Denoising Model Performance after fifth epoch </p>
+                </h6>
+
+                <div class="container grid-container">
+                    <!-- Column Headers -->
+                    <div class="col-12 text-center mb-3">
+                        <div class="row justify-content-center">
+                            <div class="col-2"><strong>Input</strong></div>
+                            <div class="col-2"><strong>Noisy (\( \sigma = 0.5 \))</strong></div>
+                            <div class="col-2"><strong>Output</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Digit 0 -->
+                    <div class="row align-items-center justify-content-center mb-4">
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/0.png" class="card-img-top" alt="Input Digit 0">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/0_noise.png" class="card-img-top" alt="Noisy Digit 0">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/0_epoch_5.png" class="card-img-top"
+                                    alt="Output Digit 0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Digit 5 -->
+                    <div class="row align-items-center justify-content-center mb-4">
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/5.png" class="card-img-top" alt="Input Digit 5">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/5_noise.png" class="card-img-top" alt="Noisy Digit 5">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/5_epoch_5.png" class="card-img-top"
+                                    alt="Output Digit 5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Digit 6 -->
+                    <div class="row align-items-center justify-content-center mb-4">
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/6.png" class="card-img-top" alt="Input Digit 6">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/6_noise.png" class="card-img-top" alt="Noisy Digit 6">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <img src="./images/unet/training/6_epoch_5.png" class="card-img-top"
+                                    alt="Output Digit 6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <p class="text-danger"> To DO </p>
+
+                <h6>
+                    <p class="text-primary-emphasis"> Figure : Unconditional UNet Training Loss </p>
+                </h6>
+
+                <div class="d-flex justify-content-center align-items-center">
+                    <img src="./images/unet/unconditional_unet_training_loss.png"
+                        class="img-fluid training-plot border rounded p-2 border-2" alt="Training Loss Plot">
+                </div>
+                <br>
+
+                <h4 class=""> Part 2.2.2: Out-of-Distribution Testing </h4>
+
+                <p>
+                    Note that the model was trained on \( \sigma = 0.5 \) noise. Now, let's see how this denoising model
+                    performs and generalizes to other levels of noise.
                 </p>
+
+                <h6>
+                    <p class="text-primary-emphasis"> Figure : Results on digits from the test set with varying noise
+                        levels.
+                    </p>
+                </h6>
+
+                <div class="container p-3 grid-container border rounded border-2 border-primary-emphasis">
+                    <div class="row justify-content-center">
+                        <!-- σ = 0.0 -->
+                        <div class="col-2">
+                            <div class="card noising-card">
+                                <img src="./images/unet/ood/7_noise_0.png" class="card-img-top"
+                                    alt="Noisy Digit 7, σ=0.0">
+                                <div class="card-body">
+                                    <p class="card-text text-center">Noisy Image with \( \sigma = 0.0 \)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- σ = 0.2 -->
+                        <div class="col-2">
+                            <div class="card noising-card">
+                                <img src="./images/unet/ood/7_noise_0_2.png" class="card-img-top"
+                                    alt="Noisy Digit 7, σ=0.2">
+                                <div class="card-body">
+                                    <p class="card-text text-center">Noisy Image with \( \sigma = 0.2 \)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- σ = 0.4 -->
+                        <div class="col-2">
+                            <div class="card noising-card">
+                                <img src="./images/unet/ood/7_noise_0_4.png" class="card-img-top"
+                                    alt="Noisy Digit 7, σ=0.4">
+                                <div class="card-body">
+                                    <p class="card-text text-center">Noisy Image with \( \sigma = 0.4 \)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- σ = 0.6 -->
+                        <div class="col-2">
+                            <div class="card noising-card">
+                                <img src="./images/unet/ood/7_noise_0_6.png" class="card-img-top"
+                                    alt="Noisy Digit 7, σ=0.6">
+                                <div class="card-body">
+                                    <p class="card-text text-center">Noisy Image with \( \sigma = 0.6 \)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- σ = 0.8 -->
+                        <div class="col-2">
+                            <div class="card noising-card">
+                                <img src="./images/unet/ood/7_noise_0_8.png" class="card-img-top"
+                                    alt="Noisy Digit 7, σ=0.8">
+                                <div class="card-body">
+                                    <p class="card-text text-center">Noisy Image with \( \sigma = 0.8 \)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- σ = 1.0 -->
+                        <div class="col-2">
+                            <div class="card noising-card">
+                                <img src="./images/unet/ood/7_noise_1.png" class="card-img-top"
+                                    alt="Noisy Digit 7, σ=1.0">
+                                <div class="card-body">
+                                    <p class="card-text text-center">Noisy Image with \( \sigma = 1.0 \)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center mt-3">
+                        <!-- Denoised σ = 0.0 -->
+                        <div class="col-2">
+                            <div class="card noising-card">
+                                <img src="./images/unet/ood/7_output_0.png" class="card-img-top"
+                                    alt="Denoised Digit 7, σ=0.0">
+                                <div class="card-body">
+                                    <p class="card-text text-center">Denoised Output</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Denoised σ = 0.2 -->
+                        <div class="col-2">
+                            <div class="card noising-card">
+                                <img src="./images/unet/ood/7_output_0_2.png" class="card-img-top"
+                                    alt="Denoised Digit 7, σ=0.2">
+                                <div class="card-body">
+                                    <p class="card-text text-center">Denoised Output</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Denoised σ = 0.4 -->
+                        <div class="col-2">
+                            <div class="card noising-card">
+                                <img src="./images/unet/ood/7_output_0_4.png" class="card-img-top"
+                                    alt="Denoised Digit 7, σ=0.4">
+                                <div class="card-body">
+                                    <p class="card-text text-center">Denoised Output</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Denoised σ = 0.6 -->
+                        <div class="col-2">
+                            <div class="card noising-card">
+                                <img src="./images/unet/ood/7_output_0_6.png" class="card-img-top"
+                                    alt="Denoised Digit 7, σ=0.6">
+                                <div class="card-body">
+                                    <p class="card-text text-center">Denoised Output</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Denoised σ = 0.8 -->
+                        <div class="col-2">
+                            <div class="card noising-card">
+                                <img src="./images/unet/ood/7_output_0_8.png" class="card-img-top"
+                                    alt="Denoised Digit 7, σ=0.8">
+                                <div class="card-body">
+                                    <p class="card-text text-center">Denoised Output</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Denoised σ = 1.0 -->
+                        <div class="col-2">
+                            <div class="card noising-card">
+                                <img src="./images/unet/ood/7_output_1.png" class="card-img-top"
+                                    alt="Denoised Digit 7, σ=1.0">
+                                <div class="card-body">
+                                    <p class="card-text text-center">Denoised Output</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <p class="text-danger"> To Do </p>
 
             </div>
 
         </div>
 
+        <div class="3">
+
+            <h1 class="display-6"> Part 3: Training a Diffusion Model </h1>
+
+            <p class="">
+                Now, we will train a UNet model that can iteratively denoise an image instead of attempting to denoise
+                in a single step.
+                Recall that previously we trained the UNet to minimize the loss: \( L = \mathbb{E}_{z, x} || D_\theta(z)
+                - x ||^2 \).
+                Now, we will change our UNet to predict the added noise \( \epsilon \) instead of the clean image \( x
+                \):
+
+                $$ L = \mathbb{E}_{z, x} || \epsilon_\theta(z) - \epsilon ||^2 $$ where \( \epsilon_\theta \) is a UNet
+                trained
+                to predict noise.
+
+            </p>
+
+            <p>
+                The goal of training a diffusion model is to eventaully be able to sample a pure noise image \( \epsilon
+                \sim \mathcal{N}(0, 1) \) and generate a realistic image \( x \) from the noise (in this case, an
+                MNIST-like image).
+                However, we saw in the previous part that one-step denoising does not yield good results.
+                Instead, we need to <strong> iteratively </strong> denoise the image for better results.
+            </p>
+
+            <p>
+                To prepare for training a diffusion model, we first need to define our variance schedule \( \beta \)
+                which controlls the amount of noise added at each timestep.
+                To do this, we create a list \( \beta \) of \( T \) values where \( \beta_0 = 0.0001\), \( \beta_T =
+                0.02 \), and all other elements \( \beta_t \) for \( t \in [1, T-1] \) are evenly spaced between \(
+                \beta_0 \) and \( \beta_T \).
+
+                Since the MNIST images are relatively small and simple, we can get by with using a smaller value of \( T
+                = 300 \) instead of \( T = 1000 \) which we used when working with DeepFloyd.
+
+                With \( \beta \) defined, we can now define a list \( \alpha \) as \( \alpha_t = 1 - \beta_t \) and a
+                list \( \bar{\alpha} \) as \( \bar{\alpha}_t = \prod_{i=1}^t \alpha_i \).
+
+                This allows us to generate noisy images \( x_t \) from \( x_0 \) for any \( t \in [0, T] \) by using the
+                equation:
+                $$ x_t = \sqrt{\bar{\alpha}_t} x_0 + \sqrt{1 - \bar{\alpha}_t} \epsilon $$ where \( \epsilon \sim
+                \mathcal{N}(0, 1) \).
+            </p>
+
+            <p>
+
+                It is important to note that using the previous UNet architecture won't work well for this task because
+                it expects the noisy image to have a noise varaince of \( \sigma = 0.5 \).
+                Since we are iteratively denoising the image, the variance of \( x_t \) will be different for each
+                timestep. While we could solve this issue by training \( T \) separate UNets, a much simpler solution is
+                to condition the UNet with timestep \( t \).
+
+                Our final objective then becomes:
+
+                $$ L = \mathbb{E}_{\epsilon, x_0, t} || \epsilon_\theta(x_t, t) - \epsilon ||^2 $$
+
+            </p>
+
+            <div class="3_1" id="section_3_1">
+
+                <h1 class="display-6"> Part 3.1: Adding Time Conditioning to UNet </h1>
+
+                <p>
+                    Now we need a way to inject scalar timestep \( t \) into our UNet model to condition it.
+                    There are many ways to do this, but we will use the architecture described below:
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis"> Figure : Conditioned UNet architecture</p>
+                </h6>
+
+                <div class="mx-auto w-75 p-3 border rounded border-2 border-primary-emphasis">
+                    <img src="./images/unet/conditional_unet.png" class="img-fluid" alt="Responsive image">
+                </div>
+
+                <br>
+
+                <p>
+                    The scalar timestep \( t \) is passed through a FC (fully-connected) block to create a vector of
+                    length \( D \). This vector is then injected through concatenation.
+                    Details of the FC block are shown below:
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis">Figure : FC Block </p>
+                </h6>
+
+                <div class="mx-auto w-75 p-3 border rounded border-2 border-primary-emphasis">
+                    <img src="./images/unet/fc_block.png" class="img-fluid" alt="Responsive image">
+                </div>
+
+                <br>
+
+                <p>
+                    Here Linear(F_in, F_out) is a linear layer with F_in input features and F_out output features which
+                    is implemented using <code>nn.Linear</code>.
+                    Since our conditioning signal \( t \) is a scalar, F_in should be of size 1. It is also recommended
+                    to normalize \( t \) to be in the range [0, 1] before embedding it (pass in \( t \) to the linear
+                    layer as \( \frac{t}{T} \).)
+                </p>
+
+
+            </div>
+
+            <div class="3_2" id="section_3_2">
+
+                <h1 class="display-6"> Part 3.2: Training the UNet </h1>
+
+                <p>
+                    To train the model, we pick a random image from the training set \( x_0 \), a random timestep \( t
+                    \), and train the denoiser to predict the noise in \( x_t \). The training algorithm is shown below:
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis"> Figure : Training time-conditioned UNet</p>
+                </h6>
+
+                <div class="mx-auto w-75 p-3 border rounded border-2 border-primary-emphasis">
+                    <img src="./images/unet/training_alg_time_conditioned_unet.png" class="img-fluid"
+                        alt="Responsive image">
+                </div>
+
+                <br>
+
+                <p>
+                    For this UNet, we set the hidden dimension \( D = 64 \) and train the model with the Adam optimizer
+                    with an initial learning rate of \( 1 \text{x} 10^{-4} \), along with an exponential learning rate
+                    decay scheduler initialized with \( \gamma = 0.1^{(1/20)} \).
+                    Using a batch size of 128, we train the model for 20 epochs.
+                    The loss curve is shown below:
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis"> Figure : Time-Conditioned UNet Training Loss</p>
+                </h6>
+
+                <div class="d-flex justify-content-center align-items-center ">
+                    <img src="./images/unet/time_conditioned_training_loss.png"
+                        class="img-fluid p-3 border rounded border-2 border-primary-emphasis" alt="Responsive image">
+                </div>
+                <br>
+            </div>
+
+            <div class="3_3" id="section_3_3">
+                <h1 class="display-6"> Part 3.3: Sampling from the Diffusion Model </h1>
+
+                <p>
+                    The sampling process starts with pure noise \( x_T \sim \mathcal{N}(0, 1) \) and iteratively
+                    denoises it using our trained model. The sampling algorithm is shown below:
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis"> Figure : Sampling Algorithm for Time-Conditioned UNet </p>
+                </h6>
+
+                <div class="mx-auto w-75 p-3 border rounded border-2 border-primary-emphasis">
+                    <img src="./images/unet/sampling_alg_time_conditioned.png" class="img-fluid"
+                        alt="Sampling Algorithm">
+                </div>
+
+                <br>
+
+                <p>
+                    Let's visualize the sampling process by showing the intermediate denoised images at different
+                    timesteps. Below we show the denoising process starting from pure noise and ending with a generated
+                    MNIST-like image:
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis"> Figure : Sampling Process Visualization </p>
+                </h6>
+
+                <div class="container grid-container">
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-8 col-md-8 col-sm-12 mb-4">
+                            <div class="card hover-gif">
+                                <img src="./images/unet/samples/diffusion_process_final_time_epoch_5.png" class="card-img-top" alt="Epoch 5 Static">
+                                <img src="./images/unet/samples/diffusion_process_grid_time_epoch_5.gif" class="card-img-top gif" alt="Epoch 5 Animation">
+                                <div class="card-body text-center">
+                                    <p class="card-text">Epoch 5 (Hover to see animation)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-8 col-md-8 col-sm-12 mb-4">
+                            <div class="card hover-gif">
+                                <img src="./images/unet/samples/diffusion_process_final_time_epoch_20.png" class="card-img-top" alt="Epoch 20 Static">
+                                <img src="./images/unet/samples/diffusion_process_grid_time_epoch_20.gif" class="card-img-top gif" alt="Epoch 20 Animation">
+                                <div class="card-body text-center">
+                                    <p class="card-text">Epoch 20 (Hover to see animation)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="3_4" id="section_3_4">
+                <h1 class="display-6"> Part 3.4: Adding Class-Conditioning to UNet </h1>
+
+                <p>
+                    To better control image generation, we can condition the UNet on the class of digit \( \in \{0, 1,
+                    2, 3, 4, 5, 6, 7, 8, 9\} \).
+                    To do this, we represent the class as a one-hot encoded vector \( c \) of size 10. This signal gets
+                    propagated through the network with the help of two additional fully-connected blocks.
+                    Additionally, we implement dropout with a 10% probability of zeroing out the one-hot encoded vector;
+                    this is done so that the model can still work without being conditioned on the class label.
+
+                    Below is the updated training algorithm:
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis"> Figure : Training Algorithm for Class-Conditioned UNet </p>
+                </h6>
+
+                <div class="mx-auto w-75 p-3 border rounded border-2 border-primary-emphasis">
+                    <img src="./images/unet/class_conditioned_training_alg.png" class="img-fluid"
+                        alt="Sampling Algorithm">
+                </div>
+
+                <p>
+                    Using the same hyperparameters as the time-conditioned UNet, we train the model and plot the loss
+                    curve below:
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis"> Figure : Class-Conditioned UNet Training Loss </p>
+                </h6>
+
+                <div class="d-flex justify-content-center align-items-center ">
+                    <img src="./images/unet/class_conditioned_training_loss.png"
+                        class="img-fluid p-3 border rounded border-2 border-primary-emphasis" alt="Responsive image">
+                </div>
+                <br>
+
+            </div>
+
+            <div class="3_5" id="section_3_5">
+                <h1 class="display-6"> Part 3.5: Sampling from the Class-Conditioned UNet </h1>
+
+                <p>
+                    To sample from the class-conditioned UNet, we will use the same technique from part A of this
+                    project. We saw before that conditional results aren't good unless we use classifier-free guidance.
+                    Therefore, we use classifier-free guidance with \( \gamma = 5 \).
+                    The algorithm for sampling is shown below:
+                </p>
+
+                <h6>
+                    <p class="text-primary-emphasis"> Figure : Sampling Algorithm for Class-Conditioned UNet </p>
+                </h6>
+
+                <div class="mx-auto w-75 p-3 border rounded border-2 border-primary-emphasis">
+                    <img src="./images/unet/class_conditioned_sampling_alg.png" class="img-fluid"
+                        alt="Responsive image">
+                </div>
+                <br>
+
+            </div>
+
+            <div class="conclusion">
+                <h1 class="display-6"> Conclusion </h1>
+
+                <p>
+                    In this project, we successfully implemented and trained a diffusion model on the MNIST dataset. We
+                    demonstrated:
+                <ul>
+                    <li>The limitations of one-step denoising</li>
+                    <li>How to condition a UNet on timesteps</li>
+                    <li>The iterative sampling process for generating new images</li>
+                    <li>Various properties of diffusion models including interpolation</li>
+                </ul>
+                The results show that even with a relatively simple architecture and a small number of timesteps
+                (T=300), we can generate high-quality MNIST-like digits using the diffusion process.
+                </p>
+            </div>
+
+        </div>
+
+        <hr>
 
         <div class="project-insight">
             <h1 class="display-6"> Neural Style Transfer Insights </h1>
