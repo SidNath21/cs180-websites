@@ -177,8 +177,9 @@
                 </div>
             </div>
 
-            <p class="text-danger">
-                TO DO
+            <p class="">
+                The image generated with 100 inference steps seems to be better quality than the image generated with just 10 inference steps.
+                There is more texture in the mountains and snow for the 100 inference steps.
             </p>
 
             <hr>
@@ -227,8 +228,8 @@
                 </div>
             </div>
 
-            <p class="text-danger">
-                TO DO
+            <p class="">
+                Similarly, the image generated with 100 inference steps is much more colorful and detailed than the black-and-white image generated with just 10 inference steps.
             </p>
 
             <hr>
@@ -278,8 +279,8 @@
 
             </div>
 
-            <p class="text-danger">
-                TO DO
+            <p class="">
+                The rocket ship generated with 10 inference steps doesn't fully resemble a standard rocket ship. However, the image generated with 100 inference steps does a better job of portraying a rocket ship.
             </p>
 
         </div>
@@ -383,8 +384,8 @@
                     </div>
                 </div>
 
-                <p class="text-danger">
-                    TO DO
+                <p class="">
+                    As \(t\) increases, the image becomes more and more noisy which is expected.
                 </p>
 
             </div>
@@ -451,8 +452,8 @@
 
 
 
-                <p class="text-danger">
-                    TO DO
+                <p class="">
+                    As shown above, classical denoising fails to remove the noise from the images. The next sections will show how we can use denoising models to get a cleaner image.
                 </p>
 
             </div>
@@ -522,8 +523,8 @@
                     </div>
                 </div>
 
-                <p class="text-danger">
-                    TO DO
+                <p class="">
+                    From these results, it is clear that one step denoising is much better than classical denoising. However, the images are still noisy and blurry ...
                 </p>
 
             </div>
@@ -649,8 +650,8 @@
                     </div>
                 </div>
 
-                <p class="text-danger">
-                    TO DO
+                <p class="">
+                    Iterative denoising outperforms one-step denoising as shown by the increased detail in the campanile and the background.
                 </p>
 
             </div>
@@ -717,8 +718,9 @@
                     </div>
                 </div>
 
-                <p class="text-danger">
-                    TO DO
+                <p class="">
+                    Many of these images appear to be dull, blurry, and too abstract/noisy. 
+                    The overall quality of these images is poor; however, we can fix this issue with a technique called classifier-free guidance.
                 </p>
 
             </div>
@@ -799,8 +801,8 @@
                     </div>
                 </div>
 
-                <p class="text-danger">
-                    TO DO
+                <p class="">
+                    The images generated with classifer-free guidance are much more vibrant and detailed than the images in the previous section. There is no ambiguity in the images anymore as they are much easier to identify.
                 </p>
 
 
@@ -824,66 +826,13 @@
                     <div class="row align-items-center justify-content-center">
                         <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                             <div class="card">
-                                <img src="./images/part1/1.7/campanile_SDEdit_1.png" class="card-img-top" alt="Image 1">
+                                <img src="./images/part1/campanile.png" class="card-img-top" alt="Image 1">
                                 <div class="card-body text-center">
-                                    <p class="card-text"> <code>strided_timesteps[1]</code> </p>
+                                    <p class="card-text"> Original Campanile </p>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
-                            <div class="card">
-                                <img src="./images/part1/1.7/campanile_SDEdit_2.png" class="card-img-top" alt="Image 1">
-
-                                <div class="card-body text-center">
-                                    <p class="card-text"> <code>strided_timesteps[3]</code> </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
-                            <div class="card">
-                                <img src="./images/part1/1.7/campanile_SDEdit_3.png" class="card-img-top" alt="Image 1">
-                                <div class="card-body text-center">
-                                    <p class="card-text"> <code>strided_timesteps[5]</code> </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
-                            <div class="card">
-                                <img src="./images/part1/1.7/campanile_SDEdit_4.png" class="card-img-top" alt="Image 1">
-                                <div class="card-body text-center">
-                                    <p class="card-text"> <code>strided_timesteps[7]</code> </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
-                            <div class="card">
-                                <img src="./images/part1/1.7/campanile_SDEdit_5.png" class="card-img-top" alt="Image 1">
-                                <div class="card-body text-center">
-                                    <p class="card-text"> <code>strided_timesteps[10]</code> </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
-                            <div class="card">
-                                <img src="./images/part1/1.7/campanile_SDEdit_6.png" class="card-img-top" alt="Image 1">
-                                <div class="card-body text-center">
-                                    <p class="card-text"> <code>strided_timesteps[20]</code> </p>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
-                </div>
-
-                <p class="text-danger">
-                    TO DO
-                </p>
-
-                <h6>
-                    <p class="text-primary-emphasis">Figure 11: SDEdit on ... </p>
-                </h6>
-
-                <div class="container grid-container">
 
                     <div class="row align-items-center justify-content-center">
                         <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
@@ -944,7 +893,7 @@
                 </p>
 
                 <h6>
-                    <p class="text-primary-emphasis">Figure 12: SDEdit on ... </p>
+                    <p class="text-primary-emphasis">Figure 11: SDEdit on Berkeley Hills </p>
                 </h6>
 
                 <div class="container grid-container">
@@ -952,7 +901,18 @@
                     <div class="row align-items-center justify-content-center">
                         <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                             <div class="card">
-                                <img src="./images/part1/1.7/campanile_SDEdit_1.png" class="card-img-top" alt="Image 1">
+                                <img src="./images/part1/1.7/hills.jpeg" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Original Hills </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/hills_SDEdit_1.png" class="card-img-top" alt="Image 1">
                                 <div class="card-body text-center">
                                     <p class="card-text"> <code>strided_timesteps[1]</code> </p>
                                 </div>
@@ -960,7 +920,7 @@
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                             <div class="card">
-                                <img src="./images/part1/1.7/campanile_SDEdit_2.png" class="card-img-top" alt="Image 1">
+                                <img src="./images/part1/1.7/hills_SDEdit_2.png" class="card-img-top" alt="Image 1">
 
                                 <div class="card-body text-center">
                                     <p class="card-text"> <code>strided_timesteps[3]</code> </p>
@@ -969,7 +929,7 @@
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                             <div class="card">
-                                <img src="./images/part1/1.7/campanile_SDEdit_3.png" class="card-img-top" alt="Image 1">
+                                <img src="./images/part1/1.7/hills_SDEdit_3.png" class="card-img-top" alt="Image 1">
                                 <div class="card-body text-center">
                                     <p class="card-text"> <code>strided_timesteps[5]</code> </p>
                                 </div>
@@ -977,7 +937,7 @@
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                             <div class="card">
-                                <img src="./images/part1/1.7/campanile_SDEdit_4.png" class="card-img-top" alt="Image 1">
+                                <img src="./images/part1/1.7/hills_SDEdit_4.png" class="card-img-top" alt="Image 1">
                                 <div class="card-body text-center">
                                     <p class="card-text"> <code>strided_timesteps[7]</code> </p>
                                 </div>
@@ -985,7 +945,7 @@
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                             <div class="card">
-                                <img src="./images/part1/1.7/campanile_SDEdit_5.png" class="card-img-top" alt="Image 1">
+                                <img src="./images/part1/1.7/hills_SDEdit_5.png" class="card-img-top" alt="Image 1">
                                 <div class="card-body text-center">
                                     <p class="card-text"> <code>strided_timesteps[10]</code> </p>
                                 </div>
@@ -993,7 +953,154 @@
                         </div>
                         <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                             <div class="card">
-                                <img src="./images/part1/1.7/campanile_SDEdit_6.png" class="card-img-top" alt="Image 1">
+                                <img src="./images/part1/1.7/hills_SDEdit_6.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[20]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <p class="text-danger">
+                    TO DO
+                </p>
+
+                <!-- <h6>
+                    <p class="text-primary-emphasis">Figure 12: SDEdit on Santa Cruz Beach </p>
+                </h6>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/beach.jpeg" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Original Beach </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/beach_SDEdit_1.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[1]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/beach_SDEdit_2.png" class="card-img-top" alt="Image 1">
+
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[3]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/beach_SDEdit_3.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[5]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/beach_SDEdit_4.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[7]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/beach_SDEdit_5.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[10]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/beach_SDEdit_6.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[20]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div> -->
+
+
+                <h6>
+                    <p class="text-primary-emphasis">Figure 13: SDEdit on Ferris Wheel </p>
+                </h6>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/wheel.jpeg" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Original Wheel </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/wheel_SDEdit_1.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[1]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/wheel_SDEdit_2.png" class="card-img-top" alt="Image 1">
+
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[3]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/wheel_SDEdit_3.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[5]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/wheel_SDEdit_4.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[7]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/wheel_SDEdit_5.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[10]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/wheel_SDEdit_6.png" class="card-img-top" alt="Image 1">
                                 <div class="card-body text-center">
                                     <p class="card-text"> <code>strided_timesteps[20]</code> </p>
                                 </div>
@@ -1014,12 +1121,221 @@
                     nonrealistic images.
                 </p>
                 <h6>
-                    <p class="text-primary-emphasis">Figure 13: SDEdit ... </p>
+                    <p class="text-primary-emphasis">Figure 13: SDEdit Pikachu </p>
                 </h6>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/pikachu.jpg" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Original Pikachu </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/pikachu_SDEdit_1.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[1]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/pikachu_SDEdit_2.png" class="card-img-top" alt="Image 1">
+
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[3]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/pikachu_SDEdit_3.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[5]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/pikachu_SDEdit_4.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[7]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/pikachu_SDEdit_5.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[10]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/pikachu_SDEdit_6.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[20]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
 
                 <p class="text-danger">
                     TO DO
                 </p>
+
+                <h6>
+                    <p class="text-primary-emphasis">Figure 13: SDEdit Earth </p>
+                </h6>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/earth.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Original Earth </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/earth_SDEdit_1.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[1]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/earth_SDEdit_2.png" class="card-img-top" alt="Image 1">
+
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[3]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/earth_SDEdit_3.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[5]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/earth_SDEdit_4.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[7]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/earth_SDEdit_5.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[10]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/earth_SDEdit_6.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[20]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <h6>
+                    <p class="text-primary-emphasis">Figure 13: SDEdit Cat </p>
+                </h6>
+
+                <div class="container grid-container">
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/cat.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> Original cat </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/cat_SDEdit_1.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[1]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/cat_SDEdit_2.png" class="card-img-top" alt="Image 1">
+
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[3]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/cat_SDEdit_3.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[5]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/cat_SDEdit_4.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[7]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/cat_SDEdit_5.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[10]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="card">
+                                <img src="./images/part1/1.7/cat_SDEdit_6.png" class="card-img-top" alt="Image 1">
+                                <div class="card-body text-center">
+                                    <p class="card-text"> <code>strided_timesteps[20]</code> </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
 
                 <h4 class=""> Part 1.7.2: Inpainting </h4>
                 <div id="section_1_7_2">
@@ -1105,7 +1421,7 @@
                         <div class="row align-items-center justify-content-center">
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                                 <div class="card">
-                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+                                    <img src="./images/part1/1.7/ducks.jpeg" class="card-img-top" alt="Image 1">
                                     <div class="card-body text-center">
                                         <p class="card-text"> </p>
                                     </div>
@@ -1113,7 +1429,7 @@
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                                 <div class="card">
-                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+                                    <img src="./images/part1/1.7/ducks_mask.png" class="card-img-top" alt="Image 1">
 
                                     <div class="card-body text-center">
                                         <p class="card-text"> Binary Mask </p>
@@ -1122,7 +1438,7 @@
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                                 <div class="card">
-                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+                                    <img src="./images/part1/1.7/ducks_to_replace.png" class="card-img-top" alt="Image 1">
                                     <div class="card-body text-center">
                                         <p class="card-text"> Image to Replace </p>
                                     </div>
@@ -1130,7 +1446,7 @@
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                                 <div class="card">
-                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+                                    <img src="./images/part1/1.7/ducks_inpaint_up.png" class="card-img-top" alt="Image 1">
                                     <div class="card-body text-center">
                                         <p class="card-text"> Inpainted Image </p>
                                     </div>
@@ -1152,7 +1468,7 @@
                         <div class="row align-items-center justify-content-center">
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                                 <div class="card">
-                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+                                    <img src="./images/part1/1.7/beach.jpeg" class="card-img-top" alt="Image 1">
                                     <div class="card-body text-center">
                                         <p class="card-text"> </p>
                                     </div>
@@ -1160,7 +1476,7 @@
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                                 <div class="card">
-                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+                                    <img src="./images/part1/1.7/beach_mask.png" class="card-img-top" alt="Image 1">
 
                                     <div class="card-body text-center">
                                         <p class="card-text"> Binary Mask </p>
@@ -1169,7 +1485,7 @@
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                                 <div class="card">
-                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+                                    <img src="./images/part1/1.7/beach_to_replace.png" class="card-img-top" alt="Image 1">
                                     <div class="card-body text-center">
                                         <p class="card-text"> Image to Replace </p>
                                     </div>
@@ -1177,7 +1493,7 @@
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
                                 <div class="card">
-                                    <img src="./images/part1/1.7/.png" class="card-img-top" alt="Image 1">
+                                    <img src="./images/part1/1.7/beach_inpaint_up.png" class="card-img-top" alt="Image 1">
                                     <div class="card-body text-center">
                                         <p class="card-text"> Inpainted Image </p>
                                     </div>
@@ -1359,7 +1675,7 @@
                         <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
                             <div class="card">
                                 <div class="anagram-wrapper">
-                                    <img src="./images/part1/1.8/.png" class="card-img-top" alt="Image 1">
+                                    <img src="./images/part1/1.8/car_anagram_up.png" class="card-img-top" alt="Image 1">
                                 </div>
                                 <div class="card-body text-center">
                                     <p class="anagram-text-original"></p>
@@ -1370,7 +1686,7 @@
                         <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
                             <div class="card">
                                 <div class="anagram-wrapper">
-                                    <img src="./images/part1/1.8/.png" class="card-img-top" alt="Image 1">
+                                    <img src="./images/part1/1.8/cat_anagram_up.png" class="card-img-top" alt="Image 1">
                                 </div>
                                 <div class="card-body text-center">
                                     <p class="anagram-text-original"></p>
@@ -1391,7 +1707,7 @@
                         <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
                             <div class="card">
                                 <div class="anagram-wrapper">
-                                    <img src="./images/part1/1.8/.png" class="card-img-top" alt="Image 1">
+                                    <img src="./images/part1/1.8/garden_anagram_up.png" class="card-img-top" alt="Image 1">
                                 </div>
                                 <div class="card-body text-center">
                                     <p class="anagram-text-original"></p>
@@ -1402,7 +1718,7 @@
                         <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
                             <div class="card">
                                 <div class="anagram-wrapper">
-                                    <img src="./images/part1/1.8/.png" class="card-img-top" alt="Image 1">
+                                    <img src="./images/part1/1.8/volcano_anagram.png" class="card-img-top" alt="Image 1">
                                 </div>
                                 <div class="card-body text-center">
                                     <p class="anagram-text-original"></p>
@@ -2393,6 +2709,8 @@
                         alt="Sampling Algorithm">
                 </div>
 
+                <br>
+
                 <p>
                     Using the same hyperparameters as the time-conditioned UNet, we train the model and plot the loss
                     curve below:
@@ -2428,7 +2746,57 @@
                     <img src="./images/unet/class_conditioned_sampling_alg.png" class="img-fluid"
                         alt="Responsive image">
                 </div>
+
                 <br>
+
+                <p> Here are some samples generated from the class-conditioned UNet: </p>
+
+                <div class="container grid-container">
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-8 col-md-8 col-sm-12 mb-4">
+                            <div class="card hover-gif">
+                                <img src="./images/unet/samples/epoch_1_final.png" class="card-img-top" alt="Epoch 1 Static">
+                                <img src="./images/unet/samples/diffusion_process_cc_epoch_1.gif" class="card-img-top gif" alt="Epoch 1 Animation">
+                                <div class="card-body text-center">
+                                    <p class="card-text">Epoch 1 (Hover to see animation)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-8 col-md-8 col-sm-12 mb-4">
+                            <div class="card hover-gif">
+                                <img src="./images/unet/samples/epoch_5_final.png" class="card-img-top" alt="Epoch 5 Static">
+                                <img src="./images/unet/samples/diffusion_process_cc_epoch_5.gif" class="card-img-top gif" alt="Epoch 5 Animation">
+                                <div class="card-body text-center">
+                                    <p class="card-text">Epoch 5 (Hover to see animation)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-8 col-md-8 col-sm-12 mb-4">
+                            <div class="card hover-gif">
+                                <img src="./images/unet/samples/epoch_10_final.png" class="card-img-top" alt="Epoch 10 Static">
+                                <img src="./images/unet/samples/diffusion_process_cc_epoch_10.gif" class="card-img-top gif" alt="Epoch 10 Animation">
+                                <div class="card-body text-center">
+                                    <p class="card-text">Epoch 10 (Hover to see animation)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-lg-8 col-md-8 col-sm-12 mb-4">
+                            <div class="card hover-gif">
+                                <img src="./images/unet/samples/epoch_20_final.png" class="card-img-top" alt="Epoch 20 Static">
+                                <img src="./images/unet/samples/diffusion_process_cc_epoch_20.gif" class="card-img-top gif" alt="Epoch 20 Animation">
+                                <div class="card-body text-center">
+                                    <p class="card-text">Epoch 20 (Hover to see animation)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
 
@@ -2440,28 +2808,15 @@
                     demonstrated:
                 <ul>
                     <li>The limitations of one-step denoising</li>
-                    <li>How to condition a UNet on timesteps</li>
+                    <li>How to condition a UNet on timesteps and class</li>
                     <li>The iterative sampling process for generating new images</li>
-                    <li>Various properties of diffusion models including interpolation</li>
+                    <li>The power of classifier-free guidance</li>
                 </ul>
                 The results show that even with a relatively simple architecture and a small number of timesteps
-                (T=300), we can generate high-quality MNIST-like digits using the diffusion process.
+                (T=300), we can generate high-quality MNIST-like digits with diffusion.
                 </p>
             </div>
 
-        </div>
-
-        <hr>
-
-        <div class="project-insight">
-            <h1 class="display-6"> Neural Style Transfer Insights </h1>
-            <p class="lead">
-                I enjoyed learning how to re-implement the paper <a href="https://arxiv.org/pdf/1508.06576.pdf">
-                    <i>A
-                        Neural Algorithm of Artistic Style</i> </a> from scratch! It was a very valuable experience
-                having to dissect the paper and take in all of the information provided by the authors. Implementing
-                this project was also fun since I had the chance to use some of my own images!
-            </p>
         </div>
 
     </div>
